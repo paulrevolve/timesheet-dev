@@ -2487,20 +2487,20 @@ export default function ApprovalComponent() {
           `Successfully approved ${rowsToApprove.length} timesheets with reason: "${reason}"`,
           "success"
         );
-        // const approvedIds = rowsToApprove.map((row) => row.id);
-        // setRows((prevRows) =>
-        //   prevRows.map((row) =>
-        //     approvedIds.includes(row.id)
-        //       ? {
-        //           ...row,
-        //           isApproved: true,
-        //           Status: "APPROVED",
-        //           selected: false,
-        //         }
-        //       : row
-        //   )
-        // );
-        await fetchData();
+        const approvedIds = rowsToApprove.map((row) => row.id);
+        setRows((prevRows) =>
+          prevRows.map((row) =>
+            approvedIds.includes(row.id)
+              ? {
+                  ...row,
+                  isApproved: true,
+                  Status: "APPROVED",
+                  selected: false,
+                }
+              : row
+          )
+        );
+        // await fetchData();
         setSelectedRows([]);
         setSelectAll(false);
       } else {
@@ -2546,20 +2546,20 @@ export default function ApprovalComponent() {
           `Successfully rejected ${rowsToReject.length} timesheets with reason: "${reason}"`,
           "success"
         );
-        // const rejectedIds = rowsToReject.map((row) => row.id);
-        // setRows((prevRows) =>
-        //   prevRows.map((row) =>
-        //     rejectedIds.includes(row.id)
-        //       ? {
-        //           ...row,
-        //           isRejected: true,
-        //           Status: "REJECTED",
-        //           selected: false,
-        //         }
-        //       : row
-        //   )
-        // );
-        await fetchData();
+        const rejectedIds = rowsToReject.map((row) => row.id);
+        setRows((prevRows) =>
+          prevRows.map((row) =>
+            rejectedIds.includes(row.id)
+              ? {
+                  ...row,
+                  isRejected: true,
+                  Status: "REJECTED",
+                  selected: false,
+                }
+              : row
+          )
+        );
+        // await fetchData();
         setSelectedRows([]);
         setSelectAll(false);
       } else {
