@@ -348,6 +348,161 @@ const CreateUserModal = ({ onClose, onUserCreated }) => {
 };
 
 // --- Edit User Modal Component ---
+// const EditUserModal = ({ user, onClose, onUserUpdated }) => {
+//   const [formData, setFormData] = useState({
+//     userId: user.userId,
+//     fullName: user.fullName || "",
+//     email: user.email || "",
+//     role: user.role || "user",
+//     isActive: user.isActive,
+//     levelNo: user.levelNo || "",
+//     level: user.level || "",
+//     workflowId: user.workflowId || "",
+//   });
+//   const [levelNos, setLevelNos] = useState([]); // For level no dropdown
+//   const [levels, setLevels] = useState([]); // For level dropdown
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [error, setError] = useState("");
+
+//   const handleChange = (e) => {
+//     const { name, value, type } = e.target;
+//     const newValue =
+//       type === "select-one" && name === "isActive" ? value === "true" : value;
+//     setFormData({ ...formData, [name]: newValue });
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setIsLoading(true);
+//     setError("");
+
+//     try {
+//       const response = await fetch(`${backendUrl}/api/User/${user.userId}`, {
+//         method: "PUT",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify(formData),
+//       });
+
+//       if (!response.ok) {
+//         const errorData = await response.json().catch(() => null);
+//         throw new Error(errorData?.message || "Failed to update user.");
+//       }
+
+//       showToast("User updated successfully!", "success");
+//       onUserUpdated();
+//       onClose();
+//     } catch (err) {
+//       setError(err.message);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+//       <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md">
+//         <div className="flex justify-between items-center mb-6">
+//           <h2 className="text-2xl font-bold text-gray-800">
+//             Edit User: {user.username}
+//           </h2>
+//           <button
+//             onClick={onClose}
+//             className="text-gray-500 hover:text-gray-800"
+//           >
+//             <FaTimes size={20} />
+//           </button>
+//         </div>
+//         <form onSubmit={handleSubmit} className="space-y-4">
+//           <div>
+//             <label className="block text-sm font-medium text-gray-700">
+//               Full Name
+//             </label>
+//             <input
+//               type="text"
+//               name="fullName"
+//               value={formData.fullName}
+//               onChange={handleChange}
+//               className="w-full mt-1 px-3 py-2 border rounded-lg"
+//               required
+//             />
+//           </div>
+//           <div>
+//             <label className="block text-sm font-medium text-gray-700">
+//               Email
+//             </label>
+//             <input
+//               type="email"
+//               name="email"
+//               value={formData.email}
+//               onChange={handleChange}
+//               className="w-full mt-1 px-3 py-2 border rounded-lg"
+//               required
+//             />
+//           </div>
+//           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+//             <div>
+//               <label className="block text-sm font-medium text-gray-700">
+//                 Role
+//               </label>
+//               <select
+//                 name="role"
+//                 value={formData.role}
+//                 onChange={handleChange}
+//                 className="w-full mt-1 px-3 py-2 border rounded-lg bg-white"
+//               >
+//                 <option value="User">User</option>
+//                 {/* <option value="pm">PM</option> */}
+//                 <option value="Admin">Admin</option>
+//               </select>
+//             </div>
+//             <div>
+//               <label className="block text-sm font-medium text-gray-700">
+//                 Status
+//               </label>
+//               <select
+//                 name="isActive"
+//                 value={formData.isActive}
+//                 onChange={handleChange}
+//                 className="w-full mt-1 px-3 py-2 border rounded-lg bg-white"
+//               >
+//                 <option value={true}>Active</option>
+//                 <option value={false}>Inactive</option>
+//               </select>
+//             </div>
+//             <div>
+//               <label className="block text-sm font-medium text-gray-700">
+//                 Level
+//               </label>
+//               <select
+//                 name="levelNo"
+//                 value={formData.levelNo}
+//                 onChange={handleChange}
+//                 className="w-full mt-1 px-3 py-2 border rounded-lg bg-white"
+//               >
+//                 <option value="">Select Level</option>
+//                 {/* {workflowOptions.map(({ value, label }) => (
+//                   <option key={value} value={value}>
+//                     {label}
+//                   </option>
+//                 ))} */}
+//               </select>
+//             </div>
+//           </div>
+//           {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+//           <div className="flex justify-end pt-4">
+//             <button
+//               type="submit"
+//               disabled={isLoading}
+//               className="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg w-full disabled:opacity-50"
+//             >
+//               {isLoading ? "Saving..." : "Save Changes"}
+//             </button>
+//           </div>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// };
 const EditUserModal = ({ user, onClose, onUserUpdated }) => {
   const [formData, setFormData] = useState({
     userId: user.userId,
@@ -355,9 +510,50 @@ const EditUserModal = ({ user, onClose, onUserUpdated }) => {
     email: user.email || "",
     role: user.role || "user",
     isActive: user.isActive,
+    workflowId: user.workflowId || "", // selected workflowId here
   });
+  const [rows, setRows] = useState([]); // API data mapped here
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch(`${backendUrl}/api/ApprovalWorkflow`)
+      .then((res) => res.json())
+      .then((data) => {
+        const mapped = data.map((item) => ({
+          workflowId: item.workflowId,
+          level: item.levelNo,
+          name: item.approverRole,
+          isMandetory: item.isMandetory,
+          requestType: item.requestType,
+        }));
+        setRows(mapped);
+      })
+      .catch((err) => {
+        console.error("Failed to load workflow data", err);
+        setRows([]);
+      });
+  }, []);
+
+  // After loading rows, update formData.workflowId if necessary
+  useEffect(() => {
+    if (rows.length > 0 && !formData.workflowId) {
+      const matchByLevel = rows.find((row) => row.level === user.levelNo);
+      if (matchByLevel) {
+        setFormData((prev) => ({
+          ...prev,
+          workflowId: matchByLevel.workflowId,
+        }));
+      } else if (user.workflowId) {
+        setFormData((prev) => ({
+          ...prev,
+          workflowId: user.workflowId,
+        }));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows]);
+  // Only depend on `rows` to run once when they load
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
@@ -370,7 +566,6 @@ const EditUserModal = ({ user, onClose, onUserUpdated }) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
     try {
       const response = await fetch(`${backendUrl}/api/User/${user.userId}`, {
         method: "PUT",
@@ -408,6 +603,7 @@ const EditUserModal = ({ user, onClose, onUserUpdated }) => {
           </button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Full Name, Email, Role, Status code omitted for brevity */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Full Name
@@ -464,7 +660,27 @@ const EditUserModal = ({ user, onClose, onUserUpdated }) => {
                 <option value={false}>Inactive</option>
               </select>
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Level
+              </label>
+              <select
+                name="workflowId"
+                value={formData.workflowId}
+                onChange={handleChange}
+                className="w-full mt-1 px-3 py-2 border rounded-lg bg-white"
+              >
+                <option value="">Select Level</option>
+                {rows.map(({ workflowId, level, name }) => (
+                  <option key={workflowId} value={workflowId}>
+                    {`${level} - ${name}`}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
+
           {error && <p className="text-sm text-red-600 text-center">{error}</p>}
           <div className="flex justify-end pt-4">
             <button
@@ -951,15 +1167,21 @@ export default function UserTable() {
                       <th className="x-2 py-2 text-center text-sm font-bold text-blue-900 uppercase tracking-wider">
                         User
                       </th>
+
                       <th className="x-2 py-2 text-center text-sm font-bold text-blue-900 uppercase tracking-wider">
                         Username
                       </th>
+
                       <th className="x-2 py-2 text-center text-sm font-bold text-blue-900 uppercase tracking-wider">
                         Role
                       </th>
                       <th className="x-2 py-2 text-center text-sm font-bold text-blue-900 uppercase tracking-wider">
+                        Approval Level
+                      </th>
+                      <th className="x-2 py-2 text-center text-sm font-bold text-blue-900 uppercase tracking-wider">
                         Status
                       </th>
+
                       <th className="x-2 py-2 text-center text-sm font-bold text-blue-900 uppercase tracking-wider">
                         Actions
                       </th>
@@ -1002,6 +1224,7 @@ export default function UserTable() {
                               </div>
                             </div>
                           </td>
+
                           <td className="px-2 py-2 whitespace-nowrap text-sm font-mono text-gray-700 text-center">
                             {user.username}
                           </td>
@@ -1017,6 +1240,9 @@ export default function UserTable() {
                             >
                               {user.role}
                             </span>
+                          </td>
+                          <td className="px-2 py-2 whitespace-nowrap text-sm font-mono text-gray-700 text-center">
+                            {user.levelNo} - {user.levelName}
                           </td>
                           <td className="px-2 py-2 whitespace-nowrap text-center">
                             <span
