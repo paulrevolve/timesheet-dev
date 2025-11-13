@@ -732,6 +732,7 @@ import TimesheetHistory from "../components/TimesheetHistory";
 import Settings from "../components/Settings";
 import ApprovalComponent from "../components/ApprovalComponent";
 import Import from "../components/import";
+import Header from "../components/Header";
 
 const showToast = (message, type = "info") => {
   const bgColor =
@@ -797,47 +798,108 @@ export default function Dashboard() {
   const isUser = currentUser?.role === "User";
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden">
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+    <div className="flex flex-col h-screen bg-white overflow-hidden ">
+      {/* Header always on top */}
+      <Header currentUser={currentUser} handleLogout={handleLogout} />
 
-      <div
-        className={`w-0 flex-1 flex flex-col min-h-0 transition-all duration-300 ${
-          sidebarOpen ? "ml-56" : "ml-20"
-        }`}
-        style={{ overflowY: "auto", overflowX: "hidden" }}
-      >
-        {pathname === "/dashboard/timesheet" ? (
-          <MainTable />
-        ) : pathname === "/dashboard/approvals" ? (
-          <ApprovalComponent />
-        ) : pathname === "/dashboard/users" ? (
-          isUser ? (
-            <PasswordManagement />
-          ) : (
-            <UserTable />
-          )
-        ) : pathname === "/dashboard/export" ? (
-          <ExportTable />
-        ) : pathname === "/dashboard/groups/manage-groups" ? (
-          <GroupsTable />
-        ) : pathname === "/dashboard/groups/manage-workflow" ? (
-          <WorkFlow />
-        ) : pathname === "/dashboard/about" ? (
-          <AboutPage handleLogout={handleLogout} />
-        ) : pathname === "/dashboard/timesheethistory" ? (
-          <TimesheetHistory />
-        ) : pathname === "/dashboard/settings" ? (
-          <Settings />
-        ) : pathname === "/dashboard/import" ? (
-          <Import />
-        ) : pathname === "/dashboard/usertable" ? (
-          <UserTable />
-        ) : isUser ? (
-          <ApprovalComponent />
-        ) : (
-          <MainTable />
-        )}
+      {/* Main area: sidebar + page content */}
+      <div className="flex flex-1 h-0">
+        {/* Sidebar: on the left, below header */}
+        <div
+          className={sidebarOpen ? "w-56" : "w-20"}
+          style={{ transition: "width 0.3s" }}
+        >
+          <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        </div>
+
+        {/* Page content: right of sidebar, scrollable */}
+        <div
+          className={`flex-1 flex flex-col min-h-0 transition-all duration-300`}
+          style={{ overflowY: "auto", overflowX: "hidden" }}
+        >
+          <main className="flex-1 min-w-0 overflow-auto bg-gray-50">
+            {/* <div className="flex-1 overflow-auto"></div> */}
+            {/* Your existing conditional rendering logic here */}
+            {pathname === "/dashboard/timesheet" ? (
+              <MainTable />
+            ) : pathname === "/dashboard/approvals" ? (
+              <ApprovalComponent />
+            ) : pathname === "/dashboard/users" ? (
+              isUser ? (
+                <PasswordManagement />
+              ) : (
+                <UserTable />
+              )
+            ) : pathname === "/dashboard/export" ? (
+              <ExportTable />
+            ) : pathname === "/dashboard/groups/manage-groups" ? (
+              <GroupsTable />
+            ) : pathname === "/dashboard/groups/manage-workflow" ? (
+              <WorkFlow />
+            ) : pathname === "/dashboard/about" ? (
+              <AboutPage handleLogout={handleLogout} />
+            ) : pathname === "/dashboard/timesheethistory" ? (
+              <TimesheetHistory />
+            ) : pathname === "/dashboard/settings" ? (
+              <Settings />
+            ) : pathname === "/dashboard/import" ? (
+              <Import />
+            ) : pathname === "/dashboard/usertable" ? (
+              <UserTable />
+            ) : isUser ? (
+              <ApprovalComponent />
+            ) : (
+              <MainTable />
+            )}
+          </main>
+        </div>
       </div>
     </div>
   );
+
+  // return (
+  //   <div className="flex h-screen bg-white overflow-hidden">
+  //     <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+
+  //     <div
+  //       className={`w-0 flex-1 flex flex-col min-h-0 transition-all duration-300 ${
+  //         sidebarOpen ? "ml-56" : "ml-20"
+  //       }`}
+  //       style={{ overflowY: "auto", overflowX: "hidden" }}
+  //     >
+  //       <Header currentUser={currentUser} handleLogout={handleLogout} />
+  //       {pathname === "/dashboard/timesheet" ? (
+  //         <MainTable />
+  //       ) : pathname === "/dashboard/approvals" ? (
+  //         <ApprovalComponent />
+  //       ) : pathname === "/dashboard/users" ? (
+  //         isUser ? (
+  //           <PasswordManagement />
+  //         ) : (
+  //           <UserTable />
+  //         )
+  //       ) : pathname === "/dashboard/export" ? (
+  //         <ExportTable />
+  //       ) : pathname === "/dashboard/groups/manage-groups" ? (
+  //         <GroupsTable />
+  //       ) : pathname === "/dashboard/groups/manage-workflow" ? (
+  //         <WorkFlow />
+  //       ) : pathname === "/dashboard/about" ? (
+  //         <AboutPage handleLogout={handleLogout} />
+  //       ) : pathname === "/dashboard/timesheethistory" ? (
+  //         <TimesheetHistory />
+  //       ) : pathname === "/dashboard/settings" ? (
+  //         <Settings />
+  //       ) : pathname === "/dashboard/import" ? (
+  //         <Import />
+  //       ) : pathname === "/dashboard/usertable" ? (
+  //         <UserTable />
+  //       ) : isUser ? (
+  //         <ApprovalComponent />
+  //       ) : (
+  //         <MainTable />
+  //       )}
+  //     </div>
+  //   </div>
+  // );
 }

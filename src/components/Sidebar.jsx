@@ -2462,18 +2462,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     //   }`}
     // >
     <div
-      className={`fixed inset-y-0 left-0 bg-slate-800 text-gray-200 shadow-lg z-40 flex flex-col border-r border-slate-700 transition-all duration-300 ${
+      className={`fixed inset-y-0 left-0 bg-slate-800 text-gray-200 shadow-lg z-40 flex flex-col border-r border-slate-700 transition-all duration-300 mt-16 ${
         sidebarOpen ? "w-56" : "w-20" // Dynamic width
       }`}
     >
       {/* Sidebar Header with Toggle Button (won't scroll) */}
-      <div className="flex items-center justify-between p-4 h-16 border-b border-slate-700 flex-shrink-0">
+      <div className="flex items-center justify-between p-2 h-10 border-b border-slate-700 flex-shrink-0">
         <span
           className={`text-lg font-bold text-white tracking-wide transition-opacity whitespace-nowrap ${
             sidebarOpen ? "opacity-100" : "opacity-0 hidden"
           }`}
         >
-          Timesheets
+          Menu
         </span>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -2485,7 +2485,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       </div>
 
       {/* Navigation Links (will scroll if content overflows) */}
-      <nav className="flex-1 p-3 space-y-2 overflow-y-auto">
+      <nav className="flex-1 p-3 space-y-2  ">
         {/* <SidebarItem
           icon={<Clock className="w-4 h-4" />}
           text="Timesheet"

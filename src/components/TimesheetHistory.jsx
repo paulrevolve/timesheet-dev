@@ -1322,46 +1322,10 @@ export default function TimesheetHistory() {
       />
 
       {/* Changed inner padding */}
-      <div className="flex-1 flex flex-col items-center justify-start p-6">
+      <div className="flex-1 flex flex-col items-center justify-start p-2">
         <div className="w-full flex flex-col items-center">
           {/* --- Improved Header Section with Logo --- */}
-          <div className="w-full flex justify-between items-center mb-4 px-4 py-3 bg-gray-800 border-b border-gray-200 shadow-sm rounded-t-lg">
-            {/* Left: Welcome Message (1/3 width) */}
-            <div className="w-1/3">
-              <h1 className="text-xl font-semibold text-white">
-                Welcome,{" "}
-                <span className="font-bold text-blue-600">
-                  {currentUser?.name}
-                </span>
-              </h1>
-            </div>
-
-            {/* Center: Logo (1/3 width) */}
-            <div className="w-1/3 flex justify-center">
-              {/* !!! IMPORTANT !!!
-                1. Change 'src' to your actual logo path (e.g., "/my-logo.png").
-                2. Change 'bg-slate-800' to the color you want behind your white logo.
-              */}
-              <div className="bg-slate-800 rounded-md p-2 shadow-inner">
-                <img
-                  src="/Columbus_Logo.png"
-                  alt="Logo"
-                  className="h-10" /* Adjust height as needed */
-                />
-              </div>
-            </div>
-
-            {/* Right: Logout Button (1/3 width) */}
-            <div className="w-1/3 flex justify-end">
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-1.5 bg-red-100 text-red-700 px-4 py-2 rounded-md text-xs font-medium hover:bg-red-200 transition-colors shadow-sm"
-              >
-                <LogOut size={14} />
-                Logout
-              </button>
-            </div>
-          </div>
+         
           {/* --- End of Improved Header Section --- */}
 
           {/* --- Improved Filters Section (Single Line) --- */}

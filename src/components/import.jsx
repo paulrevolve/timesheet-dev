@@ -509,32 +509,9 @@ const Import = () => {
 
   return (
     <div className="min-h-screen bg-[#f9fafd] flex flex-col overflow-auto">
-      <div className="flex-1 flex flex-col items-center justify-start p-6">
+      <div className="flex-1 flex flex-col items-center justify-start p-2">
         <div className="w-full flex flex-col items-center">
           {/* Header (existing, unchanged) */}
-          <div className="w-full flex justify-between items-center mb-4 px-4 py-3 bg-gray-800 border-b border-gray-200 shadow-sm rounded-t-lg">
-            <div className="w-1/3">
-              <h1 className="text-xl font-semibold text-white">
-                Welcome,{" "}
-                <span className="font-bold text-blue-600">
-                  {currentUser?.name}
-                </span>
-              </h1>
-            </div>
-            <div className="w-1/3 flex justify-center">
-              <div className="bg-slate-800 rounded-md p-2 shadow-inner">
-                <img src="/Columbus_Logo.png" alt="Logo" className="h-10" />
-              </div>
-            </div>
-            <div className="w-1/3 flex justify-end">
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-1.5 bg-red-100 text-red-700 px-4 py-2 rounded-md text-xs font-medium hover:bg-red-200 transition-colors shadow-sm"
-              >
-                <LogOut size={14} /> Logout
-              </button>
-            </div>
-          </div>
 
           {/* Import Button: Now floated top-right in its own row */}
           <div className="w-full flex flex-col items-start gap-2 mt-4 px-2">
