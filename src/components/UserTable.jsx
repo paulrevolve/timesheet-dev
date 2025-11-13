@@ -644,6 +644,7 @@ const EditUserModal = ({ user, onClose, onUserUpdated }) => {
                 <option value="User">User</option>
                 {/* <option value="pm">PM</option> */}
                 <option value="Admin">Admin</option>
+                <option value="APUser">APUser</option>
               </select>
             </div>
             <div>

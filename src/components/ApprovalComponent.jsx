@@ -1431,7 +1431,7 @@ export default function ApprovalComponent() {
   useEffect(() => {
     if (isAdmin) {
       setStatusFilters({
-        OPEN: false,
+        // OPEN: false,
         PENDING: false,
         REJECTED: false,
         APPROVED: false,

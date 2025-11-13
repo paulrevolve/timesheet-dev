@@ -241,6 +241,7 @@ const Settings = () => {
   const [allowEmailNotification, setAllowEmailNotification] = useState(false);
   const [allowEmailNotificationId, setAllowEmailNotificationId] = useState(0);
   const [notificaionEmailToId, setNotificaionEmailToId] = useState(0);
+  const [configLoading, setConfigLoading] = useState(true);
 
   // Fetch initial data from API on load
   useEffect(() => {
@@ -259,6 +260,9 @@ const Settings = () => {
       })
       .catch((err) => {
         console.error("Failed to load workflow data", err);
+      })
+      .finally(() => {
+        setConfigLoading(false); // Stop loading regardless of success or failure
       });
   }, []);
 
@@ -508,8 +512,21 @@ const Settings = () => {
       .finally(() => setLoadingWorkflow(false));
   };
 
-  if (!userLoaded || !currentUser) {
-    return <div>Loading...</div>;
+  // if (!userLoaded || !currentUser) {
+  //   return <div>Loading...</div>;
+  // }
+
+  if (configLoading) {
+    return (
+      <div className="min-h-screen bg-[#f9fafd] flex flex-col">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="flex items-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2">Loadin Settings...</span>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

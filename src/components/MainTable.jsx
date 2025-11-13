@@ -7396,6 +7396,7 @@ export default function MainTable() {
           showToast("import successful", "success");
         }
         // showToast("Upload successful", "success");
+        await fetchData();
       } finally {
         setLoading(false);
       }

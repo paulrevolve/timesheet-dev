@@ -2362,6 +2362,7 @@ import {
   User2,
   CheckCircle,
   ImportIcon,
+  History,
 } from "lucide-react";
 
 /**
@@ -2529,7 +2530,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
         {isAdmin && (
           <SidebarItem
-            icon={<Clock className="w-4 h-4" />}
+            icon={<History className="w-4 h-4" />}
             text="Timesheet History"
             to="/dashboard/timesheethistory"
             isSelected={selectedPage === "/dashboard/timesheethistory"}
@@ -2549,10 +2550,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           />
         )}
 
-        {isAdmin && (
+        {(isAdmin || isUser) && (
           <SidebarItem
             icon={<User2 className="w-4 h-4" />}
-            text="Users"
+            text={isUser ? "User Profile" : "Users"}
             to="/dashboard/usertable"
             isSelected={selectedPage === "/dashboard/usertable"}
             isCollapsed={!sidebarOpen}
@@ -2578,6 +2579,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           isCollapsed={!sidebarOpen}
           onClick={createLinkHandler("/dashboard/users")}
         /> */}
+
+        {/* {(isAdmin || isPM || isUser) && (
+            <SidebarItem
+              icon={<Users className="h-5 w-5" />}
+              text={isUser ? "User Profile" : "Users"}
+              to="/dashboard/users"
+              selectedPage={pathname}
+              handleLinkClick={handleLinkClick}
+              isCollapsed={!sidebarOpen}
+            />
+          )} */}
 
         {/* Admin-only Group links */}
         {/* {isAdmin && (
