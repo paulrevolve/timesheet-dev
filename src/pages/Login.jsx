@@ -1108,7 +1108,7 @@ export default function Login() {
         } else {
           if (role === "user" || role === "backupuser") {
             showToast(
-              "Welcome Backup User! Redirecting to approvals portal...",
+              "Welcome ! Redirecting to approvals portal...",
               "success"
             );
             setTimeout(() => {
@@ -1116,7 +1116,7 @@ export default function Login() {
             }, 1000);
           } else if (role === "admin") {
             showToast(
-              "Welcome Admin! Redirecting to timesheet portal...",
+              "Welcome ! Redirecting to timesheet portal...",
               "success"
             );
             setTimeout(() => {
