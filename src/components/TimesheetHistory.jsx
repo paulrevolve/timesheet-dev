@@ -215,7 +215,7 @@ export default function TimesheetHistory() {
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const isAdmin = currentUser?.role === "Admin";
-  const isUser = currentUser?.role === "User";
+  const isUser = currentUser?.role === "User" || currentUser?.role === "BackupUser";
   const columns = isAdmin ? columnsAdmin : columnsViewer;
   const colWidth = 120;
   const minTableWidth = columns.length * colWidth;

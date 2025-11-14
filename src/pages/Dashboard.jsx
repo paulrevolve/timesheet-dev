@@ -795,10 +795,11 @@ export default function Dashboard() {
     navigate("/");
   };
 
-  const isUser = currentUser?.role === "User";
+  const isUser =
+    currentUser?.role === "User" || currentUser?.role === "BackupUser";
 
   return (
-    <div className="flex flex-col h-screen bg-white overflow-hidden ">
+    <div className="flex flex-col h-screen bg-white overflow-hidden">
       {/* Header always on top */}
       <Header currentUser={currentUser} handleLogout={handleLogout} />
 

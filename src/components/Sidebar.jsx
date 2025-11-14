@@ -2454,6 +2454,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
 
   const isUser = currentUser?.role === "User";
   const isAdmin = currentUser?.role === "Admin";
+  const isBackupUser = currentUser?.role === "BackupUser";
 
   return (
     // <div
@@ -2495,7 +2496,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           onClick={createLinkHandler("/dashboard/timesheet")}
         /> */}
 
-        {!isUser && (
+        {isAdmin && (
           <SidebarItem
             icon={<Clock className="w-4 h-4" />}
             text="Timesheet"
@@ -2506,7 +2507,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           />
         )}
 
-        {(isAdmin || isUser) && (
+        {(isAdmin || isUser || isBackupUser) && (
           <SidebarItem
             icon={<CheckCircle className="w-4 h-4" />}
             text="Approvals"
@@ -2550,7 +2551,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
           />
         )}
 
-        {(isAdmin || isUser) && (
+        {(isAdmin || isUser || isBackupUser) && (
           <SidebarItem
             icon={<User2 className="w-4 h-4" />}
             text={isUser ? "User Profile" : "Users"}

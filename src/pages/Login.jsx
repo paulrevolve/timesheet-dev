@@ -1092,7 +1092,7 @@ export default function Login() {
         const userInfo = {
           id: loginData.id || user.toLowerCase().replace(/[^a-zA-Z0-9]/g, ""),
           name: loginData.fullName || user,
-          role: loginData.Role,
+          role: loginData.role,
           username: loginData.username || user.toLowerCase(),
           userId: loginData.userId,
           ...loginData,
@@ -1101,27 +1101,34 @@ export default function Login() {
         console.log("Storing user info:", userInfo);
         localStorage.setItem("currentUser", JSON.stringify(userInfo));
         setUserInfo(userInfo);
+        const role = loginData.role?.toLowerCase();
 
         if (loginData.firstLogin) {
           setShowPasswordModal(true);
         } else {
-          if (loginData.Role === "User") {
+          if (role === "user" || role === "backupuser") {
             showToast(
-              "Welcome User! Redirecting to timesheet portal...",
+              "Welcome Backup User! Redirecting to approvals portal...",
               "success"
             );
-          } else if (loginData.Role === "Admin") {
+            setTimeout(() => {
+              navigate("/dashboard/approvals");
+            }, 1000);
+          } else if (role === "admin") {
             showToast(
-              "Welcome Admin! Redirecting to admin portal...",
+              "Welcome Admin! Redirecting to timesheet portal...",
               "success"
             );
+            setTimeout(() => {
+              navigate("/dashboard/timesheet");
+            }, 1000);
           } else {
+            // showToast("Welcome! Logging you in...", "success");
             showToast("Welcome! Logging you in...", "success");
+            setTimeout(() => {
+              navigate("/dashboard/approvals");
+            }, 1000);
           }
-
-          setTimeout(() => {
-            navigate("/dashboard/timesheet");
-          }, 1000);
         }
       } else {
         const errorData = await loginResponse.json().catch(() => null);

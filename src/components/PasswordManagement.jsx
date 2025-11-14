@@ -290,7 +290,8 @@ export default function PasswordManagement() {
   }
 
   // Only show for User role
-  const isUser = currentUser?.role === "User";
+  const isUser =
+    currentUser?.role === "User" || currentUser?.role === "BackupUser";
 
   if (!isUser) {
     return (

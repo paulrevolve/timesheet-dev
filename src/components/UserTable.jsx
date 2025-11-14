@@ -100,7 +100,9 @@ const CreateUserModal = ({ onClose, onUserCreated }) => {
     fullName: "",
     email: "",
     password: "",
-    role: "User",
+    role: "",
+    workflowId: 0,
+    firstLogin: true,
   });
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -109,6 +111,7 @@ const CreateUserModal = ({ onClose, onUserCreated }) => {
   const [activationLoading, setActivationLoading] = useState({});
   const [currentUser, setCurrentUser] = useState(null);
   const [userLoaded, setUserLoaded] = useState(false);
+  const [rows, setRows] = useState([]);
   // --- Validation Logic ---
   const validate = (fieldValues = formData, confirmPass = confirmPassword) => {
     let tempErrors = { ...errors };
@@ -159,9 +162,55 @@ const CreateUserModal = ({ onClose, onUserCreated }) => {
     return Object.values(tempErrors).every((x) => x === "");
   };
 
+  useEffect(() => {
+    fetch(`${backendUrl}/api/ApprovalWorkflow`)
+      .then((res) => res.json())
+      .then((data) => {
+        const mapped = data.map((item) => ({
+          workflowId: item.workflowId,
+          level: item.levelNo,
+          name: item.approverRole,
+          isMandetory: item.isMandetory,
+          requestType: item.requestType,
+        }));
+        setRows(mapped);
+      })
+      .catch((err) => {
+        console.error("Failed to load workflow data", err);
+        setRows([]);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (rows.length > 0 && !formData.workflowId) {
+      const matchByLevel = rows.find((row) => row.level === user.levelNo);
+      if (matchByLevel) {
+        setFormData((prev) => ({
+          ...prev,
+          workflowId: matchByLevel.workflowId,
+        }));
+      } else if (user.workflowId) {
+        setFormData((prev) => ({
+          ...prev,
+          workflowId: user.workflowId,
+        }));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setFormData({ ...formData, [name]: value });
+  //   validate({ [name]: value });
+  // };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({
+      ...formData,
+      [name]: name === "workflowId" ? Number(value) : value,
+    });
     validate({ [name]: value });
   };
 
@@ -324,9 +373,29 @@ const CreateUserModal = ({ onClose, onUserCreated }) => {
               onChange={handleChange}
               className="w-full mt-1 px-3 py-2 border rounded-lg bg-white border-gray-300"
             >
+              <option value="">----Select Level----</option>
               <option value="User">User</option>
               {/* <option value="pm">PM</option> */}
               <option value="Admin">Admin</option>
+              <option value="BackupUser">User's Backup</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Level No
+            </label>
+            <select
+              name="workflowId"
+              value={formData.workflowId}
+              onChange={handleChange}
+              className="w-full mt-1 px-3 py-2 border rounded-lg bg-white"
+            >
+              <option value="">----Select Level----</option>
+              {rows.map(({ workflowId, level, name }) => (
+                <option key={workflowId} value={workflowId}>
+                  {`${level} - ${name}`}
+                </option>
+              ))}
             </select>
           </div>
           {serverError && (
