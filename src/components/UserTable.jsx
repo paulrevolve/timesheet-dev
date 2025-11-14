@@ -577,7 +577,7 @@ const EditUserModal = ({ user, onClose, onUserUpdated }) => {
     userId: user.userId,
     fullName: user.fullName || "",
     email: user.email || "",
-    role: user.role || "user",
+    role: user.role || "User",
     isActive: user.isActive,
     workflowId: user.workflowId || "", // selected workflowId here
   });
@@ -713,7 +713,7 @@ const EditUserModal = ({ user, onClose, onUserUpdated }) => {
                 <option value="User">User</option>
                 {/* <option value="pm">PM</option> */}
                 <option value="Admin">Admin</option>
-                <option value="APUser">APUser</option>
+                <option value="BackupUser">User's Backup</option>
               </select>
             </div>
             <div>
@@ -1028,6 +1028,7 @@ export default function UserTable() {
         email: user.email,
         role: user.role,
         isActive: true, // Set to true for activation
+        workflowId: user.workFlowId,
       };
 
       const response = await fetch(`${backendUrl}/api/User/${user.userId}`, {
@@ -1068,6 +1069,7 @@ export default function UserTable() {
         email: user.email,
         role: user.role,
         isActive: false, // Set to false for deactivation
+        workflowId: user.workFlowId,
       };
 
       const response = await fetch(`${backendUrl}/api/User/${user.userId}`, {
@@ -1111,11 +1113,11 @@ export default function UserTable() {
       const response = await fetch(`${backendUrl}/api/User/${userId}`, {
         method: "DELETE",
       });
-      if (!response.ok) throw new Error("Failed to delete user");
+      // if (!response.ok) throw new Error("Failed to delete user");
       showToast("User deleted successfully");
       setRefreshTrigger((t) => t + 1);
     } catch (error) {
-      alert("Failed to delete user");
+      showToast("Failed to delete user");
       console.error(error);
     }
   }
