@@ -726,6 +726,27 @@ export default function MainTable() {
     let filtered = rows;
     if (!Array.isArray(filtered)) return [];
 
+    const constructBatchId = (row) => {
+      const empId = row["Employee ID"] || "";
+      const date = row["Date"] || "";
+      const seqNo = row["Seq No"] || "";
+      const idPart = empId.slice(0, 3);
+
+      const dateParts = date.split("/");
+
+      let formattedDate = "";
+      if (dateParts.length === 3) {
+        const month = dateParts[0];
+        const day = dateParts[1];
+        const year = dateParts[2].slice(-2);
+        formattedDate = month + day + year;
+      } else {
+        formattedDate = date.replace(/\D/g, "");
+      }
+
+      return `${idPart}${seqNo}${formattedDate}`.toLowerCase();
+    };
+
     // --- 1. Global Search (New) ---
     if (globalSearch.trim()) {
       const searchTerm = globalSearch.trim().toLowerCase();
@@ -738,7 +759,10 @@ export default function MainTable() {
           (row["Project ID"] || "").toLowerCase().includes(searchTerm) ||
           (row["PO Number"] || "").toLowerCase().includes(searchTerm) ||
           (row["RLSE Number"] || "").toLowerCase().includes(searchTerm) ||
-          (row["Timesheet Type Code"] || "").toLowerCase().includes(searchTerm)
+          (row["Timesheet Type Code"] || "")
+            .toLowerCase()
+            .includes(searchTerm) ||
+          constructBatchId(row).includes(searchTerm)
         );
       });
     }
@@ -765,7 +789,11 @@ export default function MainTable() {
           .includes(searchEmployeeName.trim().toLowerCase())
       );
     }
-
+    if (batchIdFilter.trim()) {
+      filtered = filtered.filter((row) =>
+        constructBatchId(row).includes(batchIdFilter.trim().toLowerCase())
+      );
+    }
     // --- 3. Status Filter (Existing) ---
     const selectedStatuses = Object.entries(statusFilters)
       .filter(([status, checked]) => checked)
@@ -1218,6 +1246,7 @@ export default function MainTable() {
     setSearchDate("");
     setSearchEmployeeId("");
     setSearchEmployeeName("");
+    setBatchIdFilter("");
 
     // Reset all statusFilters values to false
     setStatusFilters((prev) =>
@@ -1337,6 +1366,13 @@ export default function MainTable() {
                   value={searchEmployeeName}
                   onChange={(e) => setSearchEmployeeName(e.target.value)}
                   placeholder="Filter by Name"
+                  className="border border-gray-300 rounded-md px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm w-36"
+                />
+                <input
+                  type="text"
+                  placeholder="Filter by Batch ID"
+                  value={batchIdFilter}
+                  onChange={(e) => setBatchIdFilter(e.target.value)}
                   className="border border-gray-300 rounded-md px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm w-36"
                 />
               </>
