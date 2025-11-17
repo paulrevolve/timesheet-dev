@@ -34,58 +34,152 @@ import { backendUrl } from "./config";
 //   }, displayTime);
 // };
 
+// const showToast = (message, type = "info") => {
+//   const bgColor =
+//     type === "success"
+//       ? "#4ade80"
+//       : type === "error"
+//       ? "#ef4444"
+//       : type === "warning"
+//       ? "#f59e0b"
+//       : "#3b82f6";
+
+//   const toast = document.createElement("div");
+//   toast.textContent = message;
+//   toast.style.cssText = `
+//       position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+//       z-index: 9999;
+//       background: ${bgColor}; color: white; padding: 12px 16px;
+//       border-radius: 6px; font-size: 14px; max-width: 300px;
+//       box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s ease;
+//     `;
+
+//   // Create close button
+//   const closeBtn = document.createElement("button");
+//   closeBtn.textContent = "✕";
+//   closeBtn.style.cssText = `
+//     background: transparent; border: none; color: white;
+//     font-size: 16px; cursor: pointer; padding: 0;
+//     line-height: 1; user-select: none;
+//   `;
+
+//   closeBtn.onclick = () => {
+//     toast.style.opacity = "0";
+//     setTimeout(() => {
+//       if (toast.parentNode) {
+//         toast.parentNode.removeChild(toast);
+//       }
+//     }, 300);
+//   };
+
+//   toast.appendChild(closeBtn);
+//   document.body.appendChild(toast);
+
+//   // Increase display time - e.g., 4000ms generally, 6000ms if message includes "import"
+//   const displayTime = message.toLowerCase().includes("import") ? 8000 : 6000;
+
+//   setTimeout(() => {
+//     toast.style.opacity = "0";
+//     setTimeout(() => {
+//       if (toast.parentNode) {
+//         toast.parentNode.removeChild(toast);
+//       }
+//     }, 300);
+//   }, displayTime);
+// };
+
 const showToast = (message, type = "info") => {
+  // Choose a vibrant, high-contrast color
   const bgColor =
     type === "success"
-      ? "#4ade80"
+      ? "#10b981" // Emerald for success
       : type === "error"
-      ? "#ef4444"
+      ? "#ef4444" // Bright red for error
       : type === "warning"
-      ? "#f59e0b"
-      : "#3b82f6";
+      ? "#f59e0b" // Amber for warning
+      : "#2463eb"; // Deep blue for info
 
+  // Create the toast container
   const toast = document.createElement("div");
-  toast.textContent = message;
+  toast.innerHTML = `
+    <div style="
+      font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      color: #fff;
+      padding-right: 38px;
+    ">${message}</div>
+    <button type="button" aria-label="Close toast" tabindex="0"
+      style="
+        position: absolute;
+        top: 10px;
+        right: 14px;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 24px;
+        font-weight: 700;
+        cursor: pointer;
+        line-height: 1;
+        opacity: 0.9;
+        transition: opacity 0.2s;
+      "
+      onmouseover="this.style.opacity=1"
+      onmouseout="this.style.opacity=0.9"
+    >✕</button>
+  `;
+
+  // Toast outer style
   toast.style.cssText = `
-    position: fixed; top: 20px; right: 20px; z-index: 9999;
-    background: ${bgColor}; color: white; padding: 12px 16px 12px 16px;
-    border-radius: 6px; font-size: 14px; max-width: 300px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 12px; transition: all 0.3s ease;
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    background: ${bgColor};
+    min-width: 340px;
+    max-width: 480px;
+    padding: 20px 20px 20px 16px;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(40,65,86,0.18);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+    position: fixed;
+    overflow: visible;
   `;
 
-  // Create close button
-  const closeBtn = document.createElement("button");
-  closeBtn.textContent = "✕";
-  closeBtn.style.cssText = `
-    background: transparent; border: none; color: white;
-    font-size: 16px; cursor: pointer; padding: 0;
-    line-height: 1; user-select: none;
-  `;
+  // Ensure relative for absolute close button
+  toast.style.position = "fixed";
+  toast.style.position = "fixed";
+  toast.style.top = "80px";
+  toast.style.left = "50%";
+  toast.style.transform = "translateX(-50%)";
 
+  // Positioning
+  toast.style.right = "auto";
+
+  // Add to the DOM
+  document.body.appendChild(toast);
+
+  // Close button logic
+  const closeBtn = toast.querySelector("button");
   closeBtn.onclick = () => {
     toast.style.opacity = "0";
     setTimeout(() => {
-      if (toast.parentNode) {
-        toast.parentNode.removeChild(toast);
-      }
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
     }, 300);
   };
 
-  toast.appendChild(closeBtn);
-  document.body.appendChild(toast);
-
-  // Increase display time - e.g., 4000ms generally, 6000ms if message includes "import"
-  const displayTime = message.toLowerCase().includes("import") ? 8000 : 6000;
-
+  // Auto-hide logic, longer if import message
+  const displayTime = message.toLowerCase().includes("import") ? 6000 : 2000;
   setTimeout(() => {
     toast.style.opacity = "0";
     setTimeout(() => {
-      if (toast.parentNode) {
-        toast.parentNode.removeChild(toast);
-      }
-    }, 300);
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 400);
   }, displayTime);
 };
 
@@ -941,7 +1035,6 @@ export default function MainTable() {
     e.stopPropagation();
     if (notifyLoading || importLoading || approveLoading || rejectLoading)
       return; // Check all loading states
-
     if (selectedRows.length === 0) {
       showToast("Please select at least one timesheet to notify.", "warning");
       return;

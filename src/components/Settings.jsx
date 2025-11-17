@@ -193,29 +193,151 @@ import { useNavigate } from "react-router-dom";
 import { Save, LogOut, Edit2, Trash2, X } from "lucide-react";
 import { backendUrl } from "./config";
 
+// const showToast = (message, type = "info") => {
+//   const bgColor =
+//     type === "success"
+//       ? "#4ade80"
+//       : type === "error"
+//       ? "#ef4444"
+//       : type === "warning"
+//       ? "#f59e0b"
+//       : "#3b82f6";
+//   const toast = document.createElement("div");
+//   toast.textContent = message;
+//   toast.style.cssText = `
+//     position: fixed; top: 20px; right: 20px; z-index: 9999;
+//     background: ${bgColor}; color: white; padding: 12px 16px;
+//     border-radius: 6px; font-size: 14px; max-width: 300px;
+//     box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s ease;
+//   `;
+//   document.body.appendChild(toast);
+//   const displayTime =
+//     message.includes("import") || message.includes("Import") ? 4000 : 1000;
+//   setTimeout(() => {
+//     toast.style.opacity = "0";
+//     setTimeout(() => document.body.removeChild(toast), 300);
+//   }, displayTime);
+// };
+
+// const showToast = (message, type = "info") => {
+//   const bgColor =
+//     type === "success"
+//       ? "#4ade80"
+//       : type === "error"
+//       ? "#ef4444"
+//       : type === "warning"
+//       ? "#f59e0b"
+//       : "#3b82f6";
+//   const toast = document.createElement("div");
+//   toast.textContent = message;
+//   toast.style.cssText = `
+//       position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+//       z-index: 9999;
+//       background: ${bgColor}; color: white; padding: 12px 16px;
+//       border-radius: 6px; font-size: 14px; max-width: 300px;
+//       box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s ease;
+//     `;
+//   document.body.appendChild(toast);
+//   const displayTime =
+//     message.includes("import") || message.includes("Import") ? 4000 : 1000;
+//   setTimeout(() => {
+//     toast.style.opacity = "0";
+//     setTimeout(() => document.body.removeChild(toast), 300);
+//   }, displayTime);
+// };
+
 const showToast = (message, type = "info") => {
+  // Choose a vibrant, high-contrast color
   const bgColor =
     type === "success"
-      ? "#4ade80"
+      ? "#10b981" // Emerald for success
       : type === "error"
-      ? "#ef4444"
+      ? "#ef4444" // Bright red for error
       : type === "warning"
-      ? "#f59e0b"
-      : "#3b82f6";
+      ? "#f59e0b" // Amber for warning
+      : "#2463eb"; // Deep blue for info
+
+  // Create the toast container
   const toast = document.createElement("div");
-  toast.textContent = message;
-  toast.style.cssText = `
-    position: fixed; top: 20px; right: 20px; z-index: 9999;
-    background: ${bgColor}; color: white; padding: 12px 16px;
-    border-radius: 6px; font-size: 14px; max-width: 300px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s ease;
+  toast.innerHTML = `
+    <div style="
+      font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 0.4px;
+      color: #fff;
+      padding-right: 38px;
+    ">${message}</div>
+    <button type="button" aria-label="Close toast" tabindex="0"
+      style="
+        position: absolute;
+        top: 10px;
+        right: 14px;
+        background: transparent;
+        border: none;
+        color: #fff;
+        font-size: 24px;
+        font-weight: 700;
+        cursor: pointer;
+        line-height: 1;
+        opacity: 0.9;
+        transition: opacity 0.2s;
+      "
+      onmouseover="this.style.opacity=1"
+      onmouseout="this.style.opacity=0.9"
+    >✕</button>
   `;
+
+  // Toast outer style
+  toast.style.cssText = `
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    background: ${bgColor};
+    min-width: 340px;
+    max-width: 480px;
+    padding: 20px 20px 20px 16px;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(40,65,86,0.18);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+    position: fixed;
+    overflow: visible;
+  `;
+
+  // Ensure relative for absolute close button
+  toast.style.position = "fixed";
+  toast.style.position = "fixed";
+  toast.style.top = "80px";
+  toast.style.left = "50%";
+  toast.style.transform = "translateX(-50%)";
+
+  // Positioning
+  toast.style.right = "auto";
+
+  // Add to the DOM
   document.body.appendChild(toast);
-  const displayTime =
-    message.includes("import") || message.includes("Import") ? 4000 : 1000;
+
+  // Close button logic
+  const closeBtn = toast.querySelector("button");
+  closeBtn.onclick = () => {
+    toast.style.opacity = "0";
+    setTimeout(() => {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 300);
+  };
+
+  // Auto-hide logic, longer if import message
+  const displayTime = message.toLowerCase().includes("import") ? 6000 : 2000;
   setTimeout(() => {
     toast.style.opacity = "0";
-    setTimeout(() => document.body.removeChild(toast), 300);
+    setTimeout(() => {
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
+    }, 400);
   }, displayTime);
 };
 
@@ -307,15 +429,36 @@ const Settings = () => {
     setPrevRow({ ...rows[idx] }); // store a copy
   };
 
+  // const handleDeleteRow = async (idx) => {
+  //   const row = rows[idx];
+  //   if (row.workflowId) {
+  //     // Replace DELETE call with actual API as needed
+  //     await fetch(`${backendUrl}/api/ApprovalWorkflow/${row.workflowId}`, {
+  //       method: "DELETE",
+  //     });
+  //   }
+  //   setRows(rows.filter((_, i) => i !== idx));
+  // };
+
   const handleDeleteRow = async (idx) => {
     const row = rows[idx];
-    if (row.workflowId) {
-      // Replace DELETE call with actual API as needed
-      await fetch(`${backendUrl}/api/ApprovalWorkflow/${row.workflowId}`, {
-        method: "DELETE",
-      });
+
+    // showToast("Deleting...", "info"); // show info toast on start
+
+    try {
+      if (row.workflowId) {
+        // Replace DELETE call with actual API as needed
+        await fetch(`${backendUrl}/api/ApprovalWorkflow/${row.workflowId}`, {
+          method: "DELETE",
+        });
+      }
+
+      setRows(rows.filter((_, i) => i !== idx));
+      showToast(" deleted successfully.", "success"); // success toast on completion
+    } catch (error) {
+      console.error("Delete error:", error);
+      showToast("Failed to delete row", "error"); // error toast on failure
     }
-    setRows(rows.filter((_, i) => i !== idx));
   };
 
   useEffect(() => {
@@ -386,6 +529,7 @@ const Settings = () => {
 
   const handleSave = () => {
     setLoading(true);
+    // showToast("Saving...", "info");
     const nowISOString = new Date().toISOString();
     // Build payload with current config values.
     // id is not sent because it may be auto-generated by backend or keep as 0
@@ -431,7 +575,7 @@ const Settings = () => {
 
   const handleSaveWorkflow = (idx) => {
     setLoadingWorkflow(true);
-
+    // showToast("Saving...", "info");
     const row = rows[idx];
 
     // Determine if it is a new row (no ID or 0), then POST, else call update
@@ -474,7 +618,7 @@ const Settings = () => {
 
   const handleUpdate = (idx) => {
     setLoadingWorkflow(true);
-
+    // showToast("Saving...", "info");
     const row = rows[idx];
 
     if (!row.workflowId || row.workflowId === 0) {
@@ -522,7 +666,7 @@ const Settings = () => {
         <div className="flex-1 flex items-center justify-center">
           <div className="flex items-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span className="ml-2">Loadin Settings...</span>
+            <span className="ml-2">Loading Settings...</span>
           </div>
         </div>
       </div>
