@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { backendUrl } from "./config";
+import { showToast } from "./Toast";
 
 // const showToast = (message, type = "info") => {
 //   const bgColor =
@@ -26,100 +27,100 @@ import { backendUrl } from "./config";
 //   }, 1000);
 // };
 
-const showToast = (message, type = "info") => {
-  // Choose a vibrant, high-contrast color
-  const bgColor =
-    type === "success"
-      ? "#10b981" // Emerald for success
-      : type === "error"
-      ? "#ef4444" // Bright red for error
-      : type === "warning"
-      ? "#f59e0b" // Amber for warning
-      : "#2463eb"; // Deep blue for info
+// const showToast = (message, type = "info") => {
+//   // Choose a vibrant, high-contrast color
+//   const bgColor =
+//     type === "success"
+//       ? "#10b981" // Emerald for success
+//       : type === "error"
+//       ? "#ef4444" // Bright red for error
+//       : type === "warning"
+//       ? "#f59e0b" // Amber for warning
+//       : "#2463eb"; // Deep blue for info
 
-  // Create the toast container
-  const toast = document.createElement("div");
-  toast.innerHTML = `
-    <div style="
-      font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-      font-size: 18px;
-      font-weight: 500;
-      letter-spacing: 0.4px;
-      color: #fff;
-      padding-right: 38px;
-    ">${message}</div>
-    <button type="button" aria-label="Close toast" tabindex="0"
-      style="
-        position: absolute;
-        top: 10px;
-        right: 14px;
-        background: transparent;
-        border: none;
-        color: #fff;
-        font-size: 24px;
-        font-weight: 700;
-        cursor: pointer;
-        line-height: 1;
-        opacity: 0.9;
-        transition: opacity 0.2s;
-      "
-      onmouseover="this.style.opacity=1"
-      onmouseout="this.style.opacity=0.9"
-    >✕</button>
-  `;
+//   // Create the toast container
+//   const toast = document.createElement("div");
+//   toast.innerHTML = `
+//     <div style="
+//       font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+//       font-size: 18px;
+//       font-weight: 500;
+//       letter-spacing: 0.4px;
+//       color: #fff;
+//       padding-right: 38px;
+//     ">${message}</div>
+//     <button type="button" aria-label="Close toast" tabindex="0"
+//       style="
+//         position: absolute;
+//         top: 10px;
+//         right: 14px;
+//         background: transparent;
+//         border: none;
+//         color: #fff;
+//         font-size: 24px;
+//         font-weight: 700;
+//         cursor: pointer;
+//         line-height: 1;
+//         opacity: 0.9;
+//         transition: opacity 0.2s;
+//       "
+//       onmouseover="this.style.opacity=1"
+//       onmouseout="this.style.opacity=0.9"
+//     >✕</button>
+//   `;
 
-  // Toast outer style
-  toast.style.cssText = `
-    position: fixed;
-    top: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 9999;
-    background: ${bgColor};
-    min-width: 340px;
-    max-width: 480px;
-    padding: 20px 20px 20px 16px;
-    border-radius: 10px;
-    box-shadow: 0 8px 32px rgba(40,65,86,0.18);
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-    position: fixed;
-    overflow: visible;
-  `;
+//   // Toast outer style
+//   toast.style.cssText = `
+//     position: fixed;
+//     top: 80px;
+//     left: 50%;
+//     transform: translateX(-50%);
+//     z-index: 9999;
+//     background: ${bgColor};
+//     min-width: 340px;
+//     max-width: 480px;
+//     padding: 20px 20px 20px 16px;
+//     border-radius: 10px;
+//     box-shadow: 0 8px 32px rgba(40,65,86,0.18);
+//     display: flex;
+//     align-items: flex-start;
+//     gap: 8px;
+//     font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+//     position: fixed;
+//     overflow: visible;
+//   `;
 
-  // Ensure relative for absolute close button
-  toast.style.position = "fixed";
-  toast.style.position = "fixed";
-  toast.style.top = "80px";
-  toast.style.left = "50%";
-  toast.style.transform = "translateX(-50%)";
+//   // Ensure relative for absolute close button
+//   toast.style.position = "fixed";
+//   toast.style.position = "fixed";
+//   toast.style.top = "80px";
+//   toast.style.left = "50%";
+//   toast.style.transform = "translateX(-50%)";
 
-  // Positioning
-  toast.style.right = "auto";
+//   // Positioning
+//   toast.style.right = "auto";
 
-  // Add to the DOM
-  document.body.appendChild(toast);
+//   // Add to the DOM
+//   document.body.appendChild(toast);
 
-  // Close button logic
-  const closeBtn = toast.querySelector("button");
-  closeBtn.onclick = () => {
-    toast.style.opacity = "0";
-    setTimeout(() => {
-      if (toast.parentNode) toast.parentNode.removeChild(toast);
-    }, 300);
-  };
+//   // Close button logic
+//   const closeBtn = toast.querySelector("button");
+//   closeBtn.onclick = () => {
+//     toast.style.opacity = "0";
+//     setTimeout(() => {
+//       if (toast.parentNode) toast.parentNode.removeChild(toast);
+//     }, 300);
+//   };
 
-  // Auto-hide logic, longer if import message
-  const displayTime = message.toLowerCase().includes("import") ? 6000 : 2000;
-  setTimeout(() => {
-    toast.style.opacity = "0";
-    setTimeout(() => {
-      if (toast.parentNode) toast.parentNode.removeChild(toast);
-    }, 400);
-  }, displayTime);
-};
+//   // Auto-hide logic, longer if import message
+//   const displayTime = message.toLowerCase().includes("import") ? 6000 : 2000;
+//   setTimeout(() => {
+//     toast.style.opacity = "0";
+//     setTimeout(() => {
+//       if (toast.parentNode) toast.parentNode.removeChild(toast);
+//     }, 400);
+//   }, displayTime);
+// };
 
 const UpdatePasswordModal = ({ isOpen, userId, onClose }) => {
   const [form, setForm] = useState({ currentPassword: "", newPassword: "" });
