@@ -7,128 +7,6 @@ import "./datepicker.css";
 import { backendUrl } from "./config";
 import { showToast } from "./Toast";
 
-// const showToast = (message, type = "info") => {
-//   const bgColor =
-//     type === "success"
-//       ? "#4ade80"
-//       : type === "error"
-//       ? "#ef4444"
-//       : type === "warning"
-//       ? "#f59e0b"
-//       : "#3b82f6";
-//   const toast = document.createElement("div");
-//   toast.textContent = message;
-//   toast.style.cssText = `
-//     position: fixed; top: 20px; right: 20px; z-index: 9999;
-//     background: ${bgColor}; color: white; padding: 12px 16px;
-//     border-radius: 6px; font-size: 14px; max-width: 300px;
-//     box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s ease;
-//   `;
-//   document.body.appendChild(toast);
-//   const displayTime =
-//     message.includes("import") || message.includes("Import") ? 4000 : 1000;
-//   setTimeout(() => {
-//     toast.style.opacity = "0";
-//     setTimeout(() => document.body.removeChild(toast), 300);
-//   }, displayTime);
-// };
-
-// const showToast = (message, type = "info") => {
-//   // Choose a vibrant, high-contrast color
-//   const bgColor =
-//     type === "success"
-//       ? "#10b981" // Emerald for success
-//       : type === "error"
-//       ? "#ef4444" // Bright red for error
-//       : type === "warning"
-//       ? "#f59e0b" // Amber for warning
-//       : "#2463eb"; // Deep blue for info
-
-//   // Create the toast container
-//   const toast = document.createElement("div");
-//   toast.innerHTML = `
-//     <div style="
-//       font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-//       font-size: 18px;
-//       font-weight: 500;
-//       letter-spacing: 0.4px;
-//       color: #fff;
-//       padding-right: 38px;
-//     ">${message}</div>
-//     <button type="button" aria-label="Close toast" tabindex="0"
-//       style="
-//         position: absolute;
-//         top: 10px;
-//         right: 14px;
-//         background: transparent;
-//         border: none;
-//         color: #fff;
-//         font-size: 24px;
-//         font-weight: 700;
-//         cursor: pointer;
-//         line-height: 1;
-//         opacity: 0.9;
-//         transition: opacity 0.2s;
-//       "
-//       onmouseover="this.style.opacity=1"
-//       onmouseout="this.style.opacity=0.9"
-//     >✕</button>
-//   `;
-
-//   // Toast outer style
-//   toast.style.cssText = `
-//     position: fixed;
-//     top: 80px;
-//     left: 50%;
-//     transform: translateX(-50%);
-//     z-index: 9999;
-//     background: ${bgColor};
-//     min-width: 340px;
-//     max-width: 480px;
-//     padding: 20px 20px 20px 16px;
-//     border-radius: 10px;
-//     box-shadow: 0 8px 32px rgba(40,65,86,0.18);
-//     display: flex;
-//     align-items: flex-start;
-//     gap: 8px;
-//     font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-//     position: fixed;
-//     overflow: visible;
-//   `;
-
-//   // Ensure relative for absolute close button
-//   toast.style.position = "fixed";
-//   toast.style.position = "fixed";
-//   toast.style.top = "80px";
-//   toast.style.left = "50%";
-//   toast.style.transform = "translateX(-50%)";
-
-//   // Positioning
-//   toast.style.right = "auto";
-
-//   // Add to the DOM
-//   document.body.appendChild(toast);
-
-//   // Close button logic
-//   const closeBtn = toast.querySelector("button");
-//   closeBtn.onclick = () => {
-//     toast.style.opacity = "0";
-//     setTimeout(() => {
-//       if (toast.parentNode) toast.parentNode.removeChild(toast);
-//     }, 300);
-//   };
-
-//   // Auto-hide logic, longer if import message
-//   const displayTime = message.toLowerCase().includes("import") ? 6000 : 2000;
-//   setTimeout(() => {
-//     toast.style.opacity = "0";
-//     setTimeout(() => {
-//       if (toast.parentNode) toast.parentNode.removeChild(toast);
-//     }, 400);
-//   }, displayTime);
-// };
-
-
 const getUserIPAddress = async () => {
   try {
     const endpoints = [
@@ -309,10 +187,17 @@ export default function TimesheetHistory() {
 
   // New state for global search
   const [globalSearch, setGlobalSearch] = useState("");
+  const now = new Date();
+  const currentMonth = String(now.getMonth() + 1).padStart(2, "0");
+  const currentYear = String(now.getFullYear());
+  const startYear = 2022;
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [filterMonth, setFilterMonth] = useState(currentMonth);
+  const [filterYear, setFilterYear] = useState(currentYear);
 
   const isAdmin = currentUser?.role === "Admin";
-  const isUser = currentUser?.role === "User" || currentUser?.role === "BackupUser";
+  const isUser =
+    currentUser?.role === "User" || currentUser?.role === "BackupUser";
   const columns = isAdmin ? columnsAdmin : columnsViewer;
   const colWidth = 120;
   const minTableWidth = columns.length * colWidth;
@@ -357,19 +242,6 @@ export default function TimesheetHistory() {
     if (isNaN(numHours)) return hours;
     return numHours.toFixed(2);
   };
-
-  // Convert date to YYYY-MM-DD for HTML date input
-  const formatDateForDateInput = (dateString) => {
-    if (!dateString) return "";
-    try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) return "";
-      return date.toISOString().split("T")[0];
-    } catch {
-      return "";
-    }
-  };
-
   // Convert YYYY-MM-DD from date input to MM/DD/YYYY for display and comparison
   const formatDateFromInput = (inputDate) => {
     if (!inputDate) return "";
@@ -539,102 +411,6 @@ export default function TimesheetHistory() {
     }
   };
 
-  // Helper function to convert array of objects to CSV string
-  const arrayToCSV = (data) => {
-    if (!Array.isArray(data) || data.length === 0) return "";
-
-    const headers = Object.keys(data[0]);
-    const csvHeaders = headers.join(",");
-
-    const csvRows = data.map((row) => {
-      return headers
-        .map((header) => {
-          const value = row[header] || "";
-          const escaped = String(value).replace(/"/g, '""');
-          return /[",\n\r]/.test(escaped) ? `"${escaped}"` : escaped;
-        })
-        .join(",");
-    });
-
-    return [csvHeaders, ...csvRows].join("\n");
-  };
-
-  // Helper function to download CSV file
-  const downloadCSV = (csvContent, filename = "imported_data.csv") => {
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = filename;
-    link.style.display = "none";
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    URL.revokeObjectURL(url);
-  };
-
-  // Helper function to parse CSV text to array of objects
-  const parseCSVText = (csvText) => {
-    if (!csvText || typeof csvText !== "string") return [];
-
-    const lines = csvText
-      .trim()
-      .split("\n")
-      .filter((line) => line.trim());
-    if (lines.length === 0) return [];
-
-    const headers = [
-      "Date",
-      "Employee ID",
-      "Timesheet Type Code",
-      "Name",
-      "Fiscal Year",
-      "Period",
-      "Project ID",
-      "Account",
-      "Org",
-      "PLC",
-      "Pay Type",
-      "RLSE Number",
-      "Hours",
-      "PO Number",
-      "PO Line Number",
-      "Field16",
-      "Field17",
-      "Field18",
-      "Field19",
-      "Field20",
-      "Field21",
-      "Field22",
-      "Field23",
-      "Seq No",
-      "Field25",
-      "Field26",
-      "Field27",
-      "Field28",
-      "Field29",
-      "Field30",
-    ];
-
-    return lines.map((line, index) => {
-      const values = line.split(",").map((val) => val.trim());
-      const obj = {};
-
-      headers.forEach((header, i) => {
-        obj[header] = values[i] || "";
-      });
-
-      obj.id = `csv-row-${index}`;
-      obj.Status = "IMPORTED";
-      obj.Comment = `Imported from CSV at ${new Date().toLocaleString()}`;
-
-      return obj;
-    });
-  };
-
   useEffect(() => {
     getUserIPAddress().then((ip) => setUserIpAddress(ip || ""));
   }, []);
@@ -674,80 +450,144 @@ export default function TimesheetHistory() {
     if (userLoaded && currentUser && currentUser.username) fetchData();
   }, [userLoaded, currentUser, isAdmin]);
 
+  // const fetchData = async () => {
+  //   if (!userLoaded || !currentUser || !currentUser.username) return;
+  //   try {
+  //     setLoading(true);
+  //     let apiUrl = "";
+  //     if (isAdmin) {
+  //       apiUrl = `${backendUrl}/api/Timesheet/GetExportedTimesheets`;
+  //     } else if (isUser) {
+  //       apiUrl = `${backendUrl}/api/Timesheet/GetExportedTimesheets`;
+  //     } else {
+  //       setRows([]);
+  //       setLoading(false);
+  //       return;
+  //     }
+  //     const response = await fetch(apiUrl, {
+  //       method: "GET",
+  //       headers: { "Content-Type": "application/json" },
+  //     });
+  //     if (!response.ok)
+  //       throw new Error(`HTTP error! status: ${response.status}`);
+  //     const apiData = await response.json();
+
+  //     const mappedData = Array.isArray(apiData)
+  //       ? apiData.map((item, index) => ({
+  //           id: item.timesheetId || item.id || `fallback-${index}`,
+  //           Exported: item.isExported ? "Y" : "N",
+  //           requestId: item.requestId || item.id,
+  //           levelNo: item.levelNo || 1,
+  //           selected: false,
+  //           notifySelected: false,
+  //           isApproved: item.approvalStatus === "APPROVED" || false,
+  //           isRejected: item.approvalStatus === "REJECTED" || false,
+  //           isNotified: item.approvalStatus === "NOTIFIED" || false,
+  //           status: isAdmin
+  //             ? item.status?.toLowerCase() || "open" // Default to 'open' for admin if null/undefined
+  //             : item.approvalStatus?.toLowerCase() || "pending", // Default to 'pending' for user if null/undefined
+  //           originalDate: item.timesheetDate,
+  //           Date: formatDate(item.timesheetDate),
+  //           "Employee ID": item.employee?.employeeId || item.employeeId || "",
+  //           "Timesheet Type Code": item.timesheetTypeCode || "",
+  //           Name:
+  //             item.displayedName ||
+  //             item.employeeName ||
+  //             `Employee ${item.employee?.employeeId || item.employeeId}` ||
+  //             "",
+  //           "Approver Name": item.approvedBy || "",
+  //           "Approve Timestamp": item.approvedDate ? item.approvedDate : " ",
+  //           "Imported By": item.createdBy || "",
+  //           "Imported Timestamp": item.importedTimestamp,
+  //           "Fiscal Year": item.fiscalYear || "",
+  //           Period: item.period || "",
+  //           "Project ID": item.projectId || "",
+  //           Account: item.accountId || "",
+  //           Org: item.organizationId || "",
+  //           PLC: item.projectLaborCategory || "",
+  //           "Pay Type": item.payType || "",
+  //           "RLSE Number": item.rlseNumber || "",
+  //           "PO Number": item.poNumber || "",
+  //           "PO Line Number": item.poLineNumber || "",
+  //           Hours: formatHours(item.hours),
+  //           "Seq No": item.sequenceNumber || "",
+  //           Status: isAdmin
+  //             ? item.approvalStatus || "OPEN" // Default to 'OPEN' for admin
+  //             : item.approvalStatus || "PENDING", // Default to 'PENDING' for user
+  //           Comment: item.comment || "",
+  //           isNotified: isAdmin
+  //             ? (item.status || "").toLowerCase() === "notified"
+  //             : (item.approvalStatus || "").toLowerCase() === "notified",
+  //         }))
+  //       : [];
+
+  //     setRows(mappedData);
+  //   } catch (error) {
+  //     setRows([]);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const fetchData = async () => {
     if (!userLoaded || !currentUser || !currentUser.username) return;
+
     try {
       setLoading(true);
-      let apiUrl = "";
-      if (isAdmin) {
-        apiUrl = `${backendUrl}/api/Timesheet/GetExportedTimesheets`;
-      } else if (isUser) {
-        apiUrl = `${backendUrl}/api/Timesheet/GetExportedTimesheets`;
-      } else {
-        setRows([]);
-        setLoading(false);
-        return;
-      }
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-      if (!response.ok)
-        throw new Error(`HTTP error! status: ${response.status}`);
-      const apiData = await response.json();
 
-      const mappedData = Array.isArray(apiData)
-        ? apiData.map((item, index) => ({
-            id: item.timesheetId || item.id || `fallback-${index}`,
-            Exported: item.isExported ? "Y" : "N",
-            requestId: item.requestId || item.id,
-            levelNo: item.levelNo || 1,
-            selected: false,
-            notifySelected: false,
-            isApproved: item.approvalStatus === "APPROVED" || false,
-            isRejected: item.approvalStatus === "REJECTED" || false,
-            isNotified: item.approvalStatus === "NOTIFIED" || false,
-            status: isAdmin
-              ? item.status?.toLowerCase() || "open" // Default to 'open' for admin if null/undefined
-              : item.approvalStatus?.toLowerCase() || "pending", // Default to 'pending' for user if null/undefined
-            originalDate: item.timesheetDate,
+      // Get current month and year
+      const now = new Date();
+      const currentMonth = (now.getMonth() + 1).toString(); // getMonth() is zero-based
+      const currentYear = now.getFullYear().toString();
+
+      // Construct API URL, always pass current month and year by default
+      const apiUrl = `${backendUrl}/api/Timesheet/GetExportedTimesheets?month=${currentMonth}&year=${currentYear}`;
+
+      // Fetch data from the API
+      const res = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to fetch timesheet data");
+      }
+
+      const data = await res.json();
+
+      const mappedData = Array.isArray(data)
+        ? data.map((item) => ({
+            Status: item.approvalStatus,
             Date: formatDate(item.timesheetDate),
-            "Employee ID": item.employee?.employeeId || item.employeeId || "",
-            "Timesheet Type Code": item.timesheetTypeCode || "",
-            Name:
-              item.displayedName ||
-              item.employeeName ||
-              `Employee ${item.employee?.employeeId || item.employeeId}` ||
-              "",
-            "Approver Name": item.approvedBy || "",
+            Exported: item.isExported ? "Y" : "N",
+            "Employee ID": item.employeeId,
+            Name: item.displayedName,
+            "Timesheet Type Code": item.timesheetTypeCode,
+            "Fiscal Year": item.fiscalYear,
+            Period: item.period,
+            "Project ID": item.projectId,
+            PLC: item.projectLaborCategory,
+            "Pay Type": item.payType,
+            "RLSE Number": item.rlseNumber,
+            "PO Number": item.poNumber,
+            "PO Line Number": item.poLineNumber,
+            Hours: item.hours,
+            "Seq No": item.sequenceNumber,
+            "Approver Name": item.approvedBy,
             "Approve Timestamp": item.approvedDate ? item.approvedDate : " ",
             "Imported By": item.createdBy || "",
             "Imported Timestamp": item.importedTimestamp,
-            "Fiscal Year": item.fiscalYear || "",
-            Period: item.period || "",
-            "Project ID": item.projectId || "",
-            Account: item.accountId || "",
-            Org: item.organizationId || "",
-            PLC: item.projectLaborCategory || "",
-            "Pay Type": item.payType || "",
-            "RLSE Number": item.rlseNumber || "",
-            "PO Number": item.poNumber || "",
-            "PO Line Number": item.poLineNumber || "",
-            Hours: formatHours(item.hours),
-            "Seq No": item.sequenceNumber || "",
-            Status: isAdmin
-              ? item.approvalStatus || "OPEN" // Default to 'OPEN' for admin
-              : item.approvalStatus || "PENDING", // Default to 'PENDING' for user
-            Comment: item.comment || "",
-            isNotified: isAdmin
-              ? (item.status || "").toLowerCase() === "notified"
-              : (item.approvalStatus || "").toLowerCase() === "notified",
+            "Approved Date": item.approvedDate
+              ? formatDate(item.approvedDate)
+              : "NA",
           }))
         : [];
 
-      setRows(mappedData);
+      setRows(mappedData); // upd
     } catch (error) {
-      setRows([]);
+      showToast("Error loading exported timesheets.", "error");
     } finally {
       setLoading(false);
     }
@@ -815,344 +655,6 @@ export default function TimesheetHistory() {
 
   const filteredRows = getFilteredRows();
 
-  const handleLogout = () => {
-    localStorage.removeItem("currentUser");
-    setCurrentUser(null);
-    setUserLoaded(false);
-    showToast("Logged out successfully", "info");
-    navigate("/");
-  };
-
-  const handleImportClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (importLoading || notifyLoading || approveLoading || rejectLoading)
-      return; // Check all loading states
-    if (fileInputRef.current) fileInputRef.current.click();
-  };
-
-  const handleImportFile = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.name.toLowerCase().endsWith(".csv")) {
-      showToast("Please select a CSV file", "error");
-      return;
-    }
-    const formData = new FormData();
-    formData.append("file", file);
-    try {
-      setImportLoading(true); // Start import loading
-      let projectId = null;
-      try {
-        const pendingResponse = await fetch(
-          `${backendUrl}/api/Timesheet/pending-approvals`
-        );
-        if (pendingResponse.ok) {
-          const pendingData = await pendingResponse.json();
-          if (Array.isArray(pendingData) && pendingData.length > 0) {
-            projectId = pendingData[0].projectId;
-          }
-        }
-      } catch (error) {
-        console.warn("Failed to fetch projectId, proceeding without it");
-      }
-
-      const importResponse = await fetch(
-        `${backendUrl}/api/Timesheet/import-csv?Username=${encodeURIComponent(
-          currentUser?.name
-        )}`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (importResponse.ok) {
-        const contentType = importResponse.headers.get("content-type");
-        console.log("Response Content-Type:", contentType);
-
-        let responseData;
-        let isCSVResponse = false;
-
-        if (
-          contentType &&
-          (contentType.includes("text/csv") ||
-            contentType.includes("text/plain"))
-        ) {
-          responseData = await importResponse.text();
-          isCSVResponse = true;
-          console.log("Detected CSV/text response");
-        } else {
-          try {
-            responseData = await importResponse.json();
-            console.log("Successfully parsed JSON response");
-          } catch (jsonError) {
-            console.log(
-              "JSON parsing failed, trying text...",
-              jsonError.message
-            );
-            const retryResponse = await fetch(
-              `${backendUrl}/api/Timesheet/import-csv?Username=${encodeURIComponent(
-                currentUser?.name
-              )}`,
-              {
-                method: "POST",
-                body: formData,
-              }
-            );
-            responseData = await retryResponse.text();
-            isCSVResponse = true;
-            console.log("Fallback to text response successful");
-          }
-        }
-
-        if (isCSVResponse && typeof responseData === "string") {
-          console.log(
-            "Processing CSV text response:",
-            responseData.substring(0, 200) + "..."
-          );
-          const filename = `api_response_${file.name.replace(
-            ".csv",
-            ""
-          )}_${Date.now()}.csv`;
-          downloadCSV(responseData, filename);
-          showToast("Downloaded Successfully", "success");
-          showToast("Import completed successfully", "info");
-          await fetchData(); // Refresh data
-          return;
-        }
-
-        // Handle JSON response
-        let dataToProcess = null;
-        let successMessage = "";
-
-        if (responseData && responseData.message) {
-          successMessage = responseData.message;
-          showToast(successMessage, "success");
-          if (responseData.data && Array.isArray(responseData.data)) {
-            dataToProcess = responseData.data;
-          }
-        } else if (Array.isArray(responseData)) {
-          dataToProcess = responseData;
-          successMessage = `Successfully imported ${responseData.length} records from: ${file.name}`;
-          showToast(successMessage, "success");
-        } else {
-          successMessage = `Successfully imported: ${file.name}`;
-          showToast(successMessage, "success");
-        }
-
-        if (
-          dataToProcess &&
-          Array.isArray(dataToProcess) &&
-          dataToProcess.length > 0
-        ) {
-          try {
-            const csvContent = arrayToCSV(dataToProcess);
-            if (csvContent) {
-              const filename = `imported_${file.name.replace(
-                ".csv",
-                ""
-              )}_${Date.now()}.csv`;
-              downloadCSV(csvContent, filename);
-              showToast("Downloaded Successfully", "success");
-            }
-          } catch (downloadError) {
-            console.warn("Failed to download CSV:", downloadError);
-            showToast("Import successful but download failed", "warning");
-          }
-
-          if (projectId) {
-            const requestBody = dataToProcess.map((item) => ({
-              requestType: "TIMESHEET",
-              requesterId: 1,
-              timesheetId: item.timesheetId || item.id,
-              projectId: projectId,
-              requestData: `Notification for imported timesheet ${
-                item.timesheetId || item.id
-              }`,
-            }));
-
-            const notifyResponse = await fetch(
-              `${backendUrl}/api/Approval/BulkNotify`,
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(requestBody),
-              }
-            );
-
-            if (notifyResponse.ok) {
-              showToast(
-                `Notifications sent for ${dataToProcess.length} imported timesheets!`,
-                "success"
-              );
-            } else {
-              showToast(
-                "Import successful but notifications failed",
-                "warning"
-              );
-            }
-          }
-        }
-
-        await fetchData(); // Refresh data
-      } else {
-        // Handle failed response
-        try {
-          const textResponse = await importResponse.text();
-          if (
-            textResponse &&
-            (textResponse.includes(",") || textResponse.includes("\n"))
-          ) {
-            console.log(
-              "Detected CSV text in error response:",
-              textResponse.substring(0, 200) + "..."
-            );
-            const filename = `error_response_${file.name.replace(
-              ".csv",
-              ""
-            )}_${Date.now()}.csv`;
-            downloadCSV(textResponse, filename);
-            showToast("Downloaded Successfully", "success");
-            return;
-          } else {
-            showToast("Import failed: " + textResponse, "error");
-          }
-        } catch (textError) {
-          showToast("Import failed: Unable to parse response", "error");
-        }
-      }
-    } catch (error) {
-      console.error("Import error:", error);
-      showToast("Import failed. Please try again.", "error");
-    } finally {
-      setActionLoading(false);
-      setImportLoading(false); // End import loading
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-    }
-  };
-
-  const handleNotifyClick = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (notifyLoading || importLoading || approveLoading || rejectLoading)
-      return; // Check all loading states
-
-    if (selectedNotifyRows.length === 0) {
-      showToast("Please select at least one timesheet to notify.", "warning");
-      return;
-    }
-
-    try {
-      setNotifyLoading(true); // Start notify loading
-      const requestBody = selectedNotifyRows.map((row) => ({
-        requestType: "TIMESHEET",
-        requesterId: 1,
-        timesheetId: row.id,
-        ProjectId: row["Project ID"],
-        requestData: `Notification for timesheet ${row.id}`,
-      }));
-
-      const response = await fetch(`${backendUrl}/api/Approval/BulkNotify`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (response.ok) {
-        showToast(
-          `Notifications sent for ${selectedNotifyRows.length} timesheets successfully!`,
-          "success"
-        );
-        const notifiedIds = selectedNotifyRows.map((row) => row.id);
-        setRows((prevRows) =>
-          prevRows.map((row) =>
-            notifiedIds.includes(row.id)
-              ? {
-                  ...row,
-                  status: "pending", // Status becomes PENDING after notify
-                  Status: "PENDING", // Status becomes PENDING after notify
-                  isNotified: true, // Mark as notified visually? Depends on requirement.
-                  notifySelected: false,
-                }
-              : row
-          )
-        );
-        setSelectedNotifyRows([]);
-        setNotifySelectAll(false);
-      } else {
-        showToast("Failed to send notifications. Please try again.", "error");
-      }
-    } catch (error) {
-      showToast("Failed to send notifications. Please try again.", "error");
-    } finally {
-      setNotifyLoading(false); // End notify loading
-    }
-  };
-
-  const handleNotifyRowSelect = (rowIndex, isSelected) => {
-    const rowData = filteredRows[rowIndex];
-
-    // Prevent selection if already Notified or Pending (already notified or actionable)
-    if (rowData.Status === "NOTIFIED" || rowData.Status === "PENDING") {
-      return;
-    }
-    const updatedRows = [...rows];
-    const actualRowIndex = rows.findIndex(
-      (row) => row.id === filteredRows[rowIndex].id
-    );
-    updatedRows[actualRowIndex].notifySelected = isSelected;
-    setRows(updatedRows);
-
-    if (isSelected) {
-      setSelectedNotifyRows((prev) => [...prev, rowData]);
-    } else {
-      setSelectedNotifyRows((prev) =>
-        prev.filter((item) => item.id !== rowData.id)
-      );
-      setNotifySelectAll(false);
-    }
-  };
-
-  // const handleNotifySelectAll = (isSelected) => {
-  //   setNotifySelectAll(isSelected);
-  //   const updatedRows = [...rows];
-  //   // Only select rows that are NOT 'NOTIFIED' or 'PENDING'
-  //   const selectableRows = filteredRows.filter(row =>
-  //     row.Status !== 'NOTIFIED' && row.Status !== 'PENDING'
-  //   );
-
-  //   selectableRows.forEach(filteredRow => {
-  //     const actualRowIndex = rows.findIndex(row => row.id === filteredRow.id);
-  //     if (actualRowIndex !== -1) updatedRows[actualRowIndex].notifySelected = isSelected;
-  //   });
-  //   setRows(updatedRows);
-  //   setSelectedNotifyRows(isSelected ? [...selectableRows] : []);
-  // };
-
-  const handleNotifySelectAll = (isSelected) => {
-    setNotifySelectAll(isSelected);
-    const updatedRows = [...rows];
-    // Only select rows that are NOT 'NOTIFIED', 'PENDING', or 'APPROVED'
-    const selectableRows = filteredRows.filter(
-      (row) =>
-        row.Status !== "NOTIFIED" &&
-        row.Status !== "PENDING" &&
-        row.Status !== "APPROVED" &&
-        row.Status !== "REJECTED"
-    );
-
-    selectableRows.forEach((filteredRow) => {
-      const actualRowIndex = rows.findIndex((row) => row.id === filteredRow.id);
-      if (actualRowIndex !== -1)
-        updatedRows[actualRowIndex].notifySelected = isSelected;
-    });
-    setRows(updatedRows);
-    setSelectedNotifyRows(isSelected ? [...selectableRows] : []);
-  };
-
   const handleRowSelect = (rowIndex, isSelected) => {
     if (!isUser) return;
     const updatedRows = [...rows];
@@ -1170,19 +672,6 @@ export default function TimesheetHistory() {
     }
   };
 
-  //   const handleSelectAll = (isSelected) => {
-  //     if (!isUser) return;
-  //     setSelectAll(isSelected);
-  //     const updatedRows = [...rows];
-  //     // const actionableRows = filteredRows.filter(row => isRowActionable(row));
-  //     const actionableRows = filteredRows.filter(row => (row["Status"] || "").toUpperCase() === "PENDING");
-  //     actionableRows.forEach(filteredRow => {
-  //       const actualRowIndex = rows.findIndex(row => row.id === filteredRow.id);
-  //       if (actualRowIndex !== -1) updatedRows[actualRowIndex].selected = isSelected;
-  //     });
-  //     setRows(updatedRows);
-  //     setSelectedRows(isSelected ? [...actionableRows] : []);
-  //   };
   const handleSelectAll = (isSelected) => {
     if (!isUser) return;
     setSelectAll(isSelected);
@@ -1213,153 +702,6 @@ export default function TimesheetHistory() {
     setSelectedRows(updatedRows.filter((row) => row.selected));
   };
 
-  const buildBulkRequestBody = (selectedRows, action, reason, ipAddress) => {
-    return selectedRows.map((row) => ({
-      requestId: row.requestId || row.id,
-      levelNo: row.levelNo || 1,
-      approverUserId: 1,
-      comment: `${action === "approve" ? "Approved" : "Rejected"} by ${
-        currentUser.name
-      }: ${reason}`,
-      ipAddress: ipAddress,
-    }));
-  };
-
-  const handleBulkApproveClick = () => {
-    if (!isUser || selectedRows.length === 0) {
-      showToast("Please select at least one timesheet to approve.", "warning");
-      return;
-    }
-    setPendingAction("approve");
-    setShowReasonModal(true);
-  };
-
-  const handleBulkRejectClick = () => {
-    if (!isUser || selectedRows.length === 0) {
-      showToast("Please select at least one timesheet to reject.", "warning");
-      return;
-    }
-    setPendingAction("reject");
-    setShowReasonModal(true);
-  };
-
-  const handleReasonConfirm = (reason) => {
-    setShowReasonModal(false);
-    if (pendingAction === "approve") {
-      performBulkApprove(reason);
-    } else if (pendingAction === "reject") {
-      performBulkReject(reason);
-    }
-    setPendingAction(null);
-  };
-
-  const handleReasonCancel = () => {
-    setShowReasonModal(false);
-    setPendingAction(null);
-  };
-
-  const performBulkApprove = async (reason) => {
-    setApproveLoading(true); // Start approve loading
-    try {
-      const requestBody = buildBulkRequestBody(
-        selectedRows,
-        "approve",
-        reason,
-        userIpAddress
-      );
-      const response = await fetch(`${backendUrl}/api/Approval/BulkApprove`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      });
-      if (response.ok) {
-        showToast(
-          `Successfully approved ${selectedRows.length} timesheets with reason: "${reason}"`,
-          "success"
-        );
-        const approvedIds = selectedRows.map((row) => row.id);
-        setRows((prevRows) =>
-          prevRows.map((row) =>
-            approvedIds.includes(row.id)
-              ? {
-                  ...row,
-                  isApproved: true,
-                  status: "approved",
-                  selected: false,
-                  Status: "APPROVED",
-                }
-              : row
-          )
-        );
-        setSelectedRows([]);
-        setSelectAll(false);
-      } else {
-        showToast(
-          "Failed to approve some timesheets. Please try again.",
-          "error"
-        );
-      }
-    } catch (error) {
-      showToast(
-        "Failed to approve timesheets. Please check your connection.",
-        "error"
-      );
-    } finally {
-      setApproveLoading(false); // End approve loading
-    }
-  };
-
-  const performBulkReject = async (reason) => {
-    setRejectLoading(true); // Start reject loading
-    try {
-      const requestBody = buildBulkRequestBody(
-        selectedRows,
-        "reject",
-        reason,
-        userIpAddress
-      );
-      const response = await fetch(`${backendUrl}/api/Approval/BulkReject`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody),
-      });
-      if (response.ok) {
-        showToast(
-          `Successfully rejected ${selectedRows.length} timesheets with reason: "${reason}"`,
-          "success"
-        );
-        const rejectedIds = selectedRows.map((row) => row.id);
-        setRows((prevRows) =>
-          prevRows.map((row) =>
-            rejectedIds.includes(row.id)
-              ? {
-                  ...row,
-                  isRejected: true,
-                  status: "rejected",
-                  selected: false,
-                  Status: "REJECTED",
-                }
-              : row
-          )
-        );
-        setSelectedRows([]);
-        setSelectAll(false);
-      } else {
-        showToast(
-          "Failed to reject some timesheets. Please try again.",
-          "error"
-        );
-      }
-    } catch (error) {
-      showToast(
-        "Failed to reject timesheets. Please check your connection.",
-        "error"
-      );
-    } finally {
-      setRejectLoading(false); // End reject loading
-    }
-  };
-
   const isRowActionable = (row) =>
     row.Status === "PENDING" && !row.isApproved && !row.isRejected;
   const hasPendingRows = Array.isArray(filteredRows)
@@ -1379,6 +721,60 @@ export default function TimesheetHistory() {
         return acc;
       }, {})
     );
+  };
+
+  const fetchFilteredData = async () => {
+    if (!filterMonth || !filterYear) {
+      showToast("Please select both month and year.", "warning");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const apiUrl = `${backendUrl}/api/Timesheet/GetExportedTimesheets?month=${filterMonth}&year=${filterYear}`;
+      const res = await fetch(apiUrl, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) throw new Error("Failed to fetch data.");
+
+      const data = await res.json();
+
+      const mappedData = Array.isArray(data)
+        ? data.map((item) => ({
+            Status: item.approvalStatus,
+            Date: formatDate(item.timesheetDate),
+            Exported: item.isExported ? "Y" : "N",
+            "Employee ID": item.employeeId,
+            Name: item.displayedName,
+            "Timesheet Type Code": item.timesheetTypeCode,
+            "Fiscal Year": item.fiscalYear,
+            Period: item.period,
+            "Project ID": item.projectId,
+            PLC: item.projectLaborCategory,
+            "Pay Type": item.payType,
+            "RLSE Number": item.rlseNumber,
+            "PO Number": item.poNumber,
+            "PO Line Number": item.poLineNumber,
+            Hours: item.hours,
+            "Seq No": item.sequenceNumber,
+            "Approver Name": item.approvedBy,
+            "Approve Timestamp": item.approvedDate ? item.approvedDate : " ",
+            "Imported By": item.createdBy || "",
+            "Imported Timestamp": item.importedTimestamp,
+            "Approved Date": item.approvedDate
+              ? formatDate(item.approvedDate)
+              : "NA",
+          }))
+        : [];
+
+      setRows(mappedData); // upd
+    } catch (error) {
+      showToast("Error fetching filtered data.", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!userLoaded || !currentUser) {
@@ -1410,21 +806,11 @@ export default function TimesheetHistory() {
   return (
     // Removed outer padding
     <div className="min-h-screen bg-[#f9fafd] flex flex-col overflow-auto">
-      <ReasonModal
-        isOpen={showReasonModal}
-        action={pendingAction}
-        selectedCount={selectedRows.length}
-        onConfirm={handleReasonConfirm}
-        onCancel={handleReasonCancel}
-      />
-
       {/* Changed inner padding */}
       <div className="flex-1 flex flex-col items-center justify-start p-2">
         <div className="w-full flex flex-col items-center">
           {/* --- Improved Header Section with Logo --- */}
-         
           {/* --- End of Improved Header Section --- */}
-
           {/* --- Improved Filters Section (Single Line) --- */}
           <div className="w-full bg-gray-800 p-4 rounded-lg shadow border border-gray-200 mb-4 flex flex-wrap items-center gap-3">
             {/* --- Global Search --- */}
@@ -1501,53 +887,49 @@ export default function TimesheetHistory() {
 
             {/* Spacer to push remaining items to the right */}
             <div className="flex-grow"></div>
-
-            {/* --- Status Filters --- */}
-            {/* <div className="flex gap-2 items-center border border-gray-200 rounded-lg px-3 py-1.5 bg-gray-50 shadow-sm">
-              <span className="flex items-center text-xs font-semibold text-gray-700 mr-2">
-                <Filter size={12} className="mr-1.5" />
-                Status:
-              </span>
-              {Object.entries(statusFilters).map(([status, checked]) => (
-                <label
-                  key={status}
-                  className={`flex items-center gap-1.5 cursor-pointer text-xs font-medium px-2 py-0.5 rounded-full transition-all ${
-                    checked
-                      ? "bg-blue-600 text-white shadow"
-                      : "bg-white text-gray-600 hover:bg-gray-200 border border-gray-300"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={(e) =>
-                      setStatusFilters((prev) => ({
-                        ...prev,
-                        [status]: e.target.checked,
-                      }))
-                    }
-                    className="h-3 w-3 text-blue-600 focus:ring-blue-500 border-gray-300 rounded hidden"
-                  />
-                  <span>{status}</span>
-                </label>
-              ))}
-            </div> */}
-
-            {/* --- Clear Button --- */}
-            {/* <button
-              onClick={handleClearAllFilters}
-              className="flex items-center gap-1 bg-gray-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-red-700 transition-colors shadow-sm disabled:opacity-50"
-              disabled={
-                loading ||
-                importLoading ||
-                notifyLoading ||
-                approveLoading ||
-                rejectLoading
-              }
-            >
-              <X size={12} />
-              Clear
-            </button> */}
+            <div className="flex items-center gap-2">
+              <select
+                value={filterMonth}
+                onChange={(e) => setFilterMonth(e.target.value)}
+                className="border rounded px-2 py-1 text-xs"
+              >
+                <option value="">Month</option>
+                <option value="01">Jan</option>
+                <option value="02">Feb</option>
+                <option value="03">Mar</option>
+                <option value="04">Apr</option>
+                <option value="05">May</option>
+                <option value="06">Jun</option>
+                <option value="07">Jul</option>
+                <option value="08">Aug</option>
+                <option value="09">Sep</option>
+                <option value="10">Oct</option>
+                <option value="11">Nov</option>
+                <option value="12">Dec</option>
+              </select>
+              <select
+                value={filterYear}
+                onChange={(e) => setFilterYear(e.target.value)}
+                className="border rounded px-2 py-1 text-xs"
+              >
+                <option value="">Year</option>
+                {[...Array(currentYear - startYear + 1)].map((_, i) => {
+                  const year = startYear + i;
+                  return (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  );
+                })}
+              </select>
+              <button
+                className="px-3 py-1 rounded bg-blue-600 text-white text-xs"
+                onClick={fetchFilteredData}
+                // disabled={!filterMonth || !filterYear}
+              >
+                Filter
+              </button>
+            </div>
           </div>
           {/* --- End of Improved Filters Section --- */}
 

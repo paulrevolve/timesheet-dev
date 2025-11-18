@@ -799,6 +799,7 @@ export default function MainTable() {
             "PO Line Number": item.poLineNumber || "",
             Hours: formatHours(item.hours),
             "Seq No": item.sequenceNumber || "",
+            "Batch ID": item.batchId || "",
             // Status: isAdmin
             //   ? item.status || "OPEN" // Default to 'OPEN' for admin
             //   : item.approvalStatus || "PENDING", // Default to 'PENDING' for user
@@ -821,26 +822,26 @@ export default function MainTable() {
     let filtered = rows;
     if (!Array.isArray(filtered)) return [];
 
-    const constructBatchId = (row) => {
-      const empId = row["Employee ID"] || "";
-      const date = row["Date"] || "";
-      const seqNo = row["Seq No"] || "";
-      const idPart = empId.slice(0, 3);
+    // const constructBatchId = (row) => {
+    //   const empId = row["Employee ID"] || "";
+    //   const date = row["Date"] || "";
+    //   const seqNo = row["Seq No"] || "";
+    //   const idPart = empId.slice(0, 3);
 
-      const dateParts = date.split("/");
+    //   const dateParts = date.split("/");
 
-      let formattedDate = "";
-      if (dateParts.length === 3) {
-        const month = dateParts[0];
-        const day = dateParts[1];
-        const year = dateParts[2].slice(-2);
-        formattedDate = month + day + year;
-      } else {
-        formattedDate = date.replace(/\D/g, "");
-      }
+    //   let formattedDate = "";
+    //   if (dateParts.length === 3) {
+    //     const month = dateParts[0];
+    //     const day = dateParts[1];
+    //     const year = dateParts[2].slice(-2);
+    //     formattedDate = month + day + year;
+    //   } else {
+    //     formattedDate = date.replace(/\D/g, "");
+    //   }
 
-      return `${idPart}${seqNo}${formattedDate}`.toLowerCase();
-    };
+    //   return `${idPart}${seqNo}${formattedDate}`.toLowerCase();
+    // };
 
     // --- 1. Global Search (New) ---
     if (globalSearch.trim()) {
@@ -857,7 +858,7 @@ export default function MainTable() {
           (row["Timesheet Type Code"] || "")
             .toLowerCase()
             .includes(searchTerm) ||
-          constructBatchId(row).includes(searchTerm)
+          (row["Batch ID"] || "").toLowerCase().includes(searchTerm)
         );
       });
     }
@@ -886,7 +887,9 @@ export default function MainTable() {
     }
     if (batchIdFilter.trim()) {
       filtered = filtered.filter((row) =>
-        constructBatchId(row).includes(batchIdFilter.trim().toLowerCase())
+        (row["Batch ID"] || "")
+          .toLowerCase()
+          .includes(batchIdFilter.trim().toLowerCase())
       );
     }
     // --- 3. Status Filter (Existing) ---
@@ -1471,12 +1474,26 @@ export default function MainTable() {
                 />
               </>
             )}
+            <button
+              onClick={handleClearAllFilters}
+              className="flex items-center gap-1 bg-gray-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-red-700 transition-colors shadow-sm disabled:opacity-50"
+              disabled={
+                loading ||
+                importLoading ||
+                notifyLoading ||
+                approveLoading ||
+                rejectLoading
+              }
+            >
+              <X size={12} />
+              Clear
+            </button>
 
             {/* Spacer to push remaining items to the right */}
             <div className="flex-grow"></div>
 
             {/* --- Status Filters --- */}
-            <div className="flex gap-2 items-center border border-gray-200 rounded-lg px-3 py-1.5 bg-gray-50 shadow-sm">
+            {/* <div className="flex gap-2 items-center border border-gray-200 rounded-lg px-3 py-1.5 bg-gray-50 shadow-sm">
               <span className="flex items-center text-xs font-semibold text-gray-700 mr-2">
                 <Filter size={12} className="mr-1.5" />
                 Status:
@@ -1504,23 +1521,9 @@ export default function MainTable() {
                   <span>{status}</span>
                 </label>
               ))}
-            </div>
+            </div> */}
 
             {/* --- Clear Button --- */}
-            <button
-              onClick={handleClearAllFilters}
-              className="flex items-center gap-1 bg-gray-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-red-700 transition-colors shadow-sm disabled:opacity-50"
-              disabled={
-                loading ||
-                importLoading ||
-                notifyLoading ||
-                approveLoading ||
-                rejectLoading
-              }
-            >
-              <X size={12} />
-              Clear
-            </button>
           </div>
           {/* --- End of Improved Filters Section --- */}
 
@@ -1819,31 +1822,32 @@ export default function MainTable() {
                                     "REJECTED"
                                 }
                               />
-                            ) : col === "Batch ID" ? (
-                              // --- BATCH ID CUSTOM LOGIC ---
-                              (() => {
-                                const empId = row["Employee ID"] || "";
-                                const date = row["Date"] || "";
-                                const seqNo = row["Seq No"] || "";
-                                const idPart = empId.slice(0, 3);
-
-                                // Parse date parts, expecting MM/DD/YYYY format
-                                const dateParts = date.split("/");
-
-                                let formattedDate = "";
-                                if (dateParts.length === 3) {
-                                  const month = dateParts[0];
-                                  const day = dateParts[1];
-                                  const year = dateParts[2].slice(-2); // last two digits of year
-                                  formattedDate = month + day + year;
-                                } else {
-                                  // fallback: remove all non-digit chars if format unexpected
-                                  formattedDate = date.replace(/\D/g, "");
-                                }
-                                // return idPart + datePart;
-                                return `${idPart}${seqNo}${formattedDate}`;
-                              })()
                             ) : (
+                              //  : col === "Batch ID" ? (
+                              //   // --- BATCH ID CUSTOM LOGIC ---
+                              //   (() => {
+                              //     const empId = row["Employee ID"] || "";
+                              //     const date = row["Date"] || "";
+                              //     const seqNo = row["Seq No"] || "";
+                              //     const idPart = empId.slice(0, 3);
+
+                              //     // Parse date parts, expecting MM/DD/YYYY format
+                              //     const dateParts = date.split("/");
+
+                              //     let formattedDate = "";
+                              //     if (dateParts.length === 3) {
+                              //       const month = dateParts[0];
+                              //       const day = dateParts[1];
+                              //       const year = dateParts[2].slice(-2); // last two digits of year
+                              //       formattedDate = month + day + year;
+                              //     } else {
+                              //       // fallback: remove all non-digit chars if format unexpected
+                              //       formattedDate = date.replace(/\D/g, "");
+                              //     }
+                              //     // return idPart + datePart;
+                              //     return `${idPart}${seqNo}${formattedDate}`;
+                              //   })()
+                              // )
                               row[col] || ""
                             )}
                           </td>
