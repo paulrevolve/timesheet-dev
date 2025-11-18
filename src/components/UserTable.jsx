@@ -79,115 +79,6 @@ import { useNavigate } from "react-router-dom";
 import { showToast } from "./Toast";
 import { backendUrl } from "./config";
 
-// A simple toast notification function
-// const showToast = (message, type = "info") => {
-//   const toast = document.createElement("div");
-//   toast.textContent = message;
-//   const bgColor = type === "success" ? "#4ade80" : "#ef4444";
-//   toast.style.cssText = `
-//     position: fixed; top: 20px; right: 20px; z-index: 10000;
-//     background: ${bgColor}; color: white; padding: 12px 16px;
-//     border-radius: 6px; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-//   `;
-//   document.body.appendChild(toast);
-//   setTimeout(() => document.body.removeChild(toast), 3000);
-// };
-
-// const showToast = (message, type = "info") => {
-//   // Choose a vibrant, high-contrast color
-//   const bgColor =
-//     type === "success"
-//       ? "#10b981" // Emerald for success
-//       : type === "error"
-//       ? "#ef4444" // Bright red for error
-//       : type === "warning"
-//       ? "#f59e0b" // Amber for warning
-//       : "#2463eb"; // Deep blue for info
-
-//   // Create the toast container
-//   const toast = document.createElement("div");
-//   toast.innerHTML = `
-//     <div style="
-//       font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-//       font-size: 18px;
-//       font-weight: 500;
-//       letter-spacing: 0.4px;
-//       color: #fff;
-//       padding-right: 38px;
-//     ">${message}</div>
-//     <button type="button" aria-label="Close toast" tabindex="0"
-//       style="
-//         position: absolute;
-//         top: 10px;
-//         right: 14px;
-//         background: transparent;
-//         border: none;
-//         color: #fff;
-//         font-size: 24px;
-//         font-weight: 700;
-//         cursor: pointer;
-//         line-height: 1;
-//         opacity: 0.9;
-//         transition: opacity 0.2s;
-//       "
-//       onmouseover="this.style.opacity=1"
-//       onmouseout="this.style.opacity=0.9"
-//     >✕</button>
-//   `;
-
-//   // Toast outer style
-//   toast.style.cssText = `
-//     position: fixed;
-//     top: 80px;
-//     left: 50%;
-//     transform: translateX(-50%);
-//     z-index: 9999;
-//     background: ${bgColor};
-//     min-width: 340px;
-//     max-width: 480px;
-//     padding: 20px 20px 20px 16px;
-//     border-radius: 10px;
-//     box-shadow: 0 8px 32px rgba(40,65,86,0.18);
-//     display: flex;
-//     align-items: flex-start;
-//     gap: 8px;
-//     font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-//     position: fixed;
-//     overflow: visible;
-//   `;
-
-//   // Ensure relative for absolute close button
-//   toast.style.position = "fixed";
-//   toast.style.position = "fixed";
-//   toast.style.top = "80px";
-//   toast.style.left = "50%";
-//   toast.style.transform = "translateX(-50%)";
-
-//   // Positioning
-//   toast.style.right = "auto";
-
-//   // Add to the DOM
-//   document.body.appendChild(toast);
-
-//   // Close button logic
-//   const closeBtn = toast.querySelector("button");
-//   closeBtn.onclick = () => {
-//     toast.style.opacity = "0";
-//     setTimeout(() => {
-//       if (toast.parentNode) toast.parentNode.removeChild(toast);
-//     }, 300);
-//   };
-
-//   // Auto-hide logic, longer if import message
-//   const displayTime = message.toLowerCase().includes("import") ? 6000 : 2000;
-//   setTimeout(() => {
-//     toast.style.opacity = "0";
-//     setTimeout(() => {
-//       if (toast.parentNode) toast.parentNode.removeChild(toast);
-//     }, 400);
-//   }, displayTime);
-// };
-
 // --- Create User Modal Component (with Enhanced Error Handling) ---
 const CreateUserModal = ({ onClose, onUserCreated }) => {
   const [formData, setFormData] = useState({
@@ -511,162 +402,7 @@ const CreateUserModal = ({ onClose, onUserCreated }) => {
   );
 };
 
-// --- Edit User Modal Component ---
-// const EditUserModal = ({ user, onClose, onUserUpdated }) => {
-//   const [formData, setFormData] = useState({
-//     userId: user.userId,
-//     fullName: user.fullName || "",
-//     email: user.email || "",
-//     role: user.role || "user",
-//     isActive: user.isActive,
-//     levelNo: user.levelNo || "",
-//     level: user.level || "",
-//     workflowId: user.workflowId || "",
-//   });
-//   const [levelNos, setLevelNos] = useState([]); // For level no dropdown
-//   const [levels, setLevels] = useState([]); // For level dropdown
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [error, setError] = useState("");
-
-//   const handleChange = (e) => {
-//     const { name, value, type } = e.target;
-//     const newValue =
-//       type === "select-one" && name === "isActive" ? value === "true" : value;
-//     setFormData({ ...formData, [name]: newValue });
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-//     setIsLoading(true);
-//     setError("");
-
-//     try {
-//       const response = await fetch(`${backendUrl}/api/User/${user.userId}`, {
-//         method: "PUT",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify(formData),
-//       });
-
-//       if (!response.ok) {
-//         const errorData = await response.json().catch(() => null);
-//         throw new Error(errorData?.message || "Failed to update user.");
-//       }
-
-//       showToast("User updated successfully!", "success");
-//       onUserUpdated();
-//       onClose();
-//     } catch (err) {
-//       setError(err.message);
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-//       <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md">
-//         <div className="flex justify-between items-center mb-6">
-//           <h2 className="text-2xl font-bold text-gray-800">
-//             Edit User: {user.username}
-//           </h2>
-//           <button
-//             onClick={onClose}
-//             className="text-gray-500 hover:text-gray-800"
-//           >
-//             <FaTimes size={20} />
-//           </button>
-//         </div>
-//         <form onSubmit={handleSubmit} className="space-y-4">
-//           <div>
-//             <label className="block text-sm font-medium text-gray-700">
-//               Full Name
-//             </label>
-//             <input
-//               type="text"
-//               name="fullName"
-//               value={formData.fullName}
-//               onChange={handleChange}
-//               className="w-full mt-1 px-3 py-2 border rounded-lg"
-//               required
-//             />
-//           </div>
-//           <div>
-//             <label className="block text-sm font-medium text-gray-700">
-//               Email
-//             </label>
-//             <input
-//               type="email"
-//               name="email"
-//               value={formData.email}
-//               onChange={handleChange}
-//               className="w-full mt-1 px-3 py-2 border rounded-lg"
-//               required
-//             />
-//           </div>
-//           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//             <div>
-//               <label className="block text-sm font-medium text-gray-700">
-//                 Role
-//               </label>
-//               <select
-//                 name="role"
-//                 value={formData.role}
-//                 onChange={handleChange}
-//                 className="w-full mt-1 px-3 py-2 border rounded-lg bg-white"
-//               >
-//                 <option value="User">User</option>
-//                 {/* <option value="pm">PM</option> */}
-//                 <option value="Admin">Admin</option>
-//               </select>
-//             </div>
-//             <div>
-//               <label className="block text-sm font-medium text-gray-700">
-//                 Status
-//               </label>
-//               <select
-//                 name="isActive"
-//                 value={formData.isActive}
-//                 onChange={handleChange}
-//                 className="w-full mt-1 px-3 py-2 border rounded-lg bg-white"
-//               >
-//                 <option value={true}>Active</option>
-//                 <option value={false}>Inactive</option>
-//               </select>
-//             </div>
-//             <div>
-//               <label className="block text-sm font-medium text-gray-700">
-//                 Level
-//               </label>
-//               <select
-//                 name="levelNo"
-//                 value={formData.levelNo}
-//                 onChange={handleChange}
-//                 className="w-full mt-1 px-3 py-2 border rounded-lg bg-white"
-//               >
-//                 <option value="">Select Level</option>
-//                 {/* {workflowOptions.map(({ value, label }) => (
-//                   <option key={value} value={value}>
-//                     {label}
-//                   </option>
-//                 ))} */}
-//               </select>
-//             </div>
-//           </div>
-//           {error && <p className="text-sm text-red-600 text-center">{error}</p>}
-//           <div className="flex justify-end pt-4">
-//             <button
-//               type="submit"
-//               disabled={isLoading}
-//               className="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg w-full disabled:opacity-50"
-//             >
-//               {isLoading ? "Saving..." : "Save Changes"}
-//             </button>
-//           </div>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// };
+// -- Edit User modal
 const EditUserModal = ({ user, onClose, onUserUpdated }) => {
   const [formData, setFormData] = useState({
     userId: user.userId,
@@ -1222,11 +958,18 @@ export default function UserTable() {
     // More robust filtering logic
     const filteredUsers = users.filter((user) => {
       const query = searchQuery.toLowerCase();
+      const statusString = user.isActive === true ? "active" : "inactive";
       return (
         (user.fullName && user.fullName.toLowerCase().includes(query)) ||
         (user.username && user.username.toLowerCase().includes(query)) ||
         (user.email && user.email.toLowerCase().includes(query)) ||
-        (user.role && user.role.toLowerCase().includes(query))
+        (user.role && user.role.toLowerCase().includes(query)) ||
+        (user.levelNo &&
+          user.levelName &&
+          `${user.levelNo} - ${user.levelName}`
+            .toLowerCase()
+            .includes(query)) ||
+        statusString.includes(query)
       );
     });
 
@@ -1289,7 +1032,7 @@ export default function UserTable() {
             <div className="border border-gray-300 rounded-2xl bg-white shadow-md p-2 w-full  mx-auto">
               <div
                 className="overflow-x-auto overflow-y-auto w-full"
-                style={{ maxHeight: "60vh" }}
+                style={{ maxHeight: "75vh" }}
               >
                 <table className="border-collapse table-auto min-w-[650px] w-full">
                   <thead className="sticky top-0 bg-gray-50 z-10 border-b-2 border-gray-200">

@@ -780,44 +780,45 @@ import { FaTimes } from "react-icons/fa";
 // };
 
 const showToast = (message, type = "info") => {
-  // Choose a vibrant, high-contrast color
+  // Refined color palette
   const bgColor =
     type === "success"
-      ? "#10b981" // Emerald for success
+      ? "#16a34a" // Medium green
       : type === "error"
-      ? "#ef4444" // Bright red for error
+      ? "#dc2626" // Soft red
       : type === "warning"
-      ? "#f59e0b" // Amber for warning
-      : "#2463eb"; // Deep blue for info
+      ? "#f59e0b" // Amber
+      : "#2563eb"; // Blue
 
   // Create the toast container
   const toast = document.createElement("div");
   toast.innerHTML = `
     <div style="
       font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-      font-size: 18px;
-      font-weight: 500;
-      letter-spacing: 0.4px;
+      font-size: 15px;
+      font-weight: 400;
+      letter-spacing: 0.2px;
       color: #fff;
-      padding-right: 38px;
+      padding-right: 30px;
+      line-height: 1.4;
     ">${message}</div>
     <button type="button" aria-label="Close toast" tabindex="0"
       style="
         position: absolute;
-        top: 10px;
-        right: 14px;
+        top: 8px;
+        right: 12px;
         background: transparent;
         border: none;
         color: #fff;
-        font-size: 24px;
-        font-weight: 700;
+        font-size: 18px;
+        font-weight: 400;
         cursor: pointer;
         line-height: 1;
-        opacity: 0.9;
+        opacity: 0.8;
         transition: opacity 0.2s;
       "
       onmouseover="this.style.opacity=1"
-      onmouseout="this.style.opacity=0.9"
+      onmouseout="this.style.opacity=0.8"
     >✕</button>
   `;
 
@@ -829,11 +830,11 @@ const showToast = (message, type = "info") => {
     transform: translateX(-50%);
     z-index: 9999;
     background: ${bgColor};
-    min-width: 340px;
-    max-width: 480px;
-    padding: 20px 20px 20px 16px;
-    border-radius: 10px;
-    box-shadow: 0 8px 32px rgba(40,65,86,0.18);
+    min-width: 280px;
+    max-width: 380px;
+    padding: 14px 16px 14px 14px;
+    border-radius: 8px;
+    box-shadow: 0 6px 24px rgba(40,65,86,0.14);
     display: flex;
     align-items: flex-start;
     gap: 8px;
@@ -842,17 +843,6 @@ const showToast = (message, type = "info") => {
     overflow: visible;
   `;
 
-  // Ensure relative for absolute close button
-  toast.style.position = "fixed";
-  toast.style.position = "fixed";
-  toast.style.top = "80px";
-  toast.style.left = "50%";
-  toast.style.transform = "translateX(-50%)";
-
-  // Positioning
-  toast.style.right = "auto";
-
-  // Add to the DOM
   document.body.appendChild(toast);
 
   // Close button logic
@@ -864,8 +854,8 @@ const showToast = (message, type = "info") => {
     }, 300);
   };
 
-  // Auto-hide logic, longer if import message
-  const displayTime = message.toLowerCase().includes("import") ? 6000 : 2000;
+  // Auto-hide logic
+  const displayTime = message.toLowerCase().includes("import") ? 3000 : 1000;
   setTimeout(() => {
     toast.style.opacity = "0";
     setTimeout(() => {
