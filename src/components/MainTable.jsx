@@ -380,7 +380,7 @@ export default function MainTable() {
   useEffect(() => {
     if (isAdmin) {
       setStatusFilters({
-        OPEN: false,
+        OPEN: true,
         PENDING: false,
         REJECTED: false,
         // APPROVED: false,
