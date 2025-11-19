@@ -1071,21 +1071,29 @@ export default function MainTable() {
             notifiedIds.includes(row.id)
               ? {
                   ...row,
-                  status: "pending", // Status becomes PENDING after notify
-                  Status: "PENDING", // Status becomes PENDING after notify
-                  isNotified: true, // Mark as notified visually? Depends on requirement.
+                  status: "pending",
+                  Status: "PENDING",
+                  isNotified: true,
                   notifySelected: false,
                   selected: false,
                 }
               : row
           )
         );
-        // setSelectedNotifyRows([]);
-        // setNotifySelectAll(false);
-        setSelectedRows([]); // ← Changed
+        setSelectedRows([]);
         setSelectAll(false);
       } else {
-        showToast("Failed to send notifications. Please try again.", "error");
+        let errorMessage = "Failed to send notifications. Please try again.";
+        try {
+          const errorData = await response.text();
+          if (errorData) {
+            errorMessage = errorData;
+          }
+        } catch (e) {
+          // Keep default message
+          showToast("Failed to send notifications. Please try again.", "error");
+        }
+        showToast(errorMessage, "error");
       }
     } catch (error) {
       showToast("Failed to send notifications. Please try again.", "error");
