@@ -382,7 +382,7 @@ export default function MainTable() {
       setStatusFilters({
         OPEN: false,
         PENDING: false,
-        // REJECTED: false,
+        REJECTED: false,
         // APPROVED: false,
       });
     } else if (isUser) {
