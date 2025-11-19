@@ -27,182 +27,6 @@ if (typeof document !== "undefined") {
   }
 }
 
-// const showToast = (message, type = "info") => {
-//   // Choose a vibrant, high-contrast color
-//   const bgColor =
-//     type === "success"
-//       ? "#10b981" // Emerald for success
-//       : type === "error"
-//       ? "#ef4444" // Bright red for error
-//       : type === "warning"
-//       ? "#f59e0b" // Amber for warning
-//       : "#2463eb"; // Deep blue for info
-
-//   // Create the toast container
-//   const toast = document.createElement("div");
-//   toast.innerHTML = `
-//     <div style="
-//       font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-//       font-size: 18px;
-//       font-weight: 500;
-//       letter-spacing: 0.4px;
-//       color: #fff;
-//       padding-right: 38px;
-//     ">${message}</div>
-//     <button type="button" aria-label="Close toast" tabindex="0"
-//       style="
-//         position: absolute;
-//         top: 10px;
-//         right: 14px;
-//         background: transparent;
-//         border: none;
-//         color: #fff;
-//         font-size: 24px;
-//         font-weight: 700;
-//         cursor: pointer;
-//         line-height: 1;
-//         opacity: 0.9;
-//         transition: opacity 0.2s;
-//       "
-//       onmouseover="this.style.opacity=1"
-//       onmouseout="this.style.opacity=0.9"
-//     >✕</button>
-//   `;
-
-//   // Toast outer style
-//   toast.style.cssText = `
-//     position: fixed;
-//     top: 80px;
-//     left: 50%;
-//     transform: translateX(-50%);
-//     z-index: 9999;
-//     background: ${bgColor};
-//     min-width: 340px;
-//     max-width: 480px;
-//     padding: 20px 20px 20px 16px;
-//     border-radius: 10px;
-//     box-shadow: 0 8px 32px rgba(40,65,86,0.18);
-//     display: flex;
-//     align-items: flex-start;
-//     gap: 8px;
-//     font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-//     position: fixed;
-//     overflow: visible;
-//   `;
-
-//   // Ensure relative for absolute close button
-//   toast.style.position = "fixed";
-//   toast.style.position = "fixed";
-//   toast.style.top = "80px";
-//   toast.style.left = "50%";
-//   toast.style.transform = "translateX(-50%)";
-
-//   // Positioning
-//   toast.style.right = "auto";
-
-//   // Add to the DOM
-//   document.body.appendChild(toast);
-
-//   // Close button logic
-//   const closeBtn = toast.querySelector("button");
-//   closeBtn.onclick = () => {
-//     toast.style.opacity = "0";
-//     setTimeout(() => {
-//       if (toast.parentNode) toast.parentNode.removeChild(toast);
-//     }, 300);
-//   };
-
-//   // Auto-hide logic, longer if import message
-//   const displayTime = message.toLowerCase().includes("import") ? 6000 : 2000;
-//   setTimeout(() => {
-//     toast.style.opacity = "0";
-//     setTimeout(() => {
-//       if (toast.parentNode) toast.parentNode.removeChild(toast);
-//     }, 400);
-//   }, displayTime);
-// };
-
-// const showToast = (message, type = "info") => {
-//   const bgColor =
-//     type === "success"
-//       ? "#4ade80"
-//       : type === "error"
-//       ? "#ef4444"
-//       : type === "warning"
-//       ? "#f59e0b"
-//       : "#3b82f6";
-//   const toast = document.createElement("div");
-//   toast.textContent = message;
-//   toast.style.cssText = `
-//       position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
-//       z-index: 9999;
-//       background: ${bgColor}; color: white; padding: 12px 16px;
-//       border-radius: 6px; font-size: 14px; max-width: 300px;
-//       box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s ease;
-//     `;
-//   document.body.appendChild(toast);
-//   const displayTime =
-//     message.includes("import") || message.includes("Import") ? 4000 : 1000;
-//   setTimeout(() => {
-//     toast.style.opacity = "0";
-//     setTimeout(() => document.body.removeChild(toast), 300);
-//   }, displayTime);
-// };
-
-// const showToast = (message, type = "info") => {
-//   const bgColor =
-//     type === "success"
-//       ? "#4ade80"
-//       : type === "error"
-//       ? "#ef4444"
-//       : type === "warning"
-//       ? "#f59e0b"
-//       : "#3b82f6";
-
-//   const toast = document.createElement("div");
-//   toast.textContent = message;
-//   toast.style.cssText = `
-//       position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
-//       z-index: 9999;
-//       background: ${bgColor}; color: white; padding: 12px 16px;
-//       border-radius: 6px; font-size: 14px; max-width: 300px;
-//       box-shadow: 0 4px 12px rgba(0,0,0,0.15); transition: all 0.3s ease;
-//     `;
-
-//   // Create close button
-//   const closeBtn = document.createElement("button");
-//   closeBtn.textContent = "✕";
-//   closeBtn.style.cssText = `
-//     background: transparent; border: none; color: white;
-//     font-size: 16px; cursor: pointer; padding: 0;
-//     line-height: 1; user-select: none;
-//   `;
-
-//   closeBtn.onclick = () => {
-//     toast.style.opacity = "0";
-//     setTimeout(() => {
-//       if (toast.parentNode) {
-//         toast.parentNode.removeChild(toast);
-//       }
-//     }, 300);
-//   };
-
-//   toast.appendChild(closeBtn);
-//   document.body.appendChild(toast);
-
-//   // Increase display time - e.g., 4000ms generally, 6000ms if message includes "import"
-//   const displayTime = message.toLowerCase().includes("import") ? 8000 : 6000;
-
-//   setTimeout(() => {
-//     toast.style.opacity = "0";
-//     setTimeout(() => {
-//       if (toast.parentNode) {
-//         toast.parentNode.removeChild(toast);
-//       }
-//     }, 300);
-//   }, displayTime);
-// };
-
 const columnsAdmin = [
   "Select",
   // "Approval Levels",
@@ -337,6 +161,13 @@ export default function ApprovalComponent() {
   const [selectAll, setSelectAll] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [userLoaded, setUserLoaded] = useState(false);
+  const now = new Date();
+  const currentMonth = String(now.getMonth() + 1).padStart(2, "0");
+  const currentYear = String(now.getFullYear());
+  const startYear = 2022;
+
+  const [filterMonth, setFilterMonth] = useState(currentMonth);
+  const [filterYear, setFilterYear] = useState(currentYear);
 
   const [searchDate, setSearchDate] = useState("");
   const [searchEmployeeId, setSearchEmployeeId] = useState("");
@@ -367,14 +198,14 @@ export default function ApprovalComponent() {
     if (isAdmin) {
       setStatusFilters({
         // OPEN: false,
-        PENDING: false,
+        PENDING: true,
         REJECTED: false,
         APPROVED: false,
       });
     } else if (isUser) {
       setStatusFilters({
         APPROVED: false,
-        PENDING: false,
+        PENDING: true,
         REJECTED: false,
       });
     }
@@ -694,11 +525,11 @@ export default function ApprovalComponent() {
       if (isAdmin) {
         apiUrl = `${backendUrl}/api/Timesheet/pending-approvalsByUser?userName=${encodeURIComponent(
           currentUser.username || currentUser.id
-        )}&status=ALL`;
+        )}&status=ALL&month=${filterMonth}&year=${filterYear}`;
       } else if (isUser) {
         apiUrl = `${backendUrl}/api/Timesheet/pending-approvalsByUser?userName=${encodeURIComponent(
           currentUser.username || currentUser.id
-        )}&status=ALL`;
+        )}&status=ALL&month=${filterMonth}&year=${filterYear}`;
       } else {
         setRows([]);
         setLoading(false);
@@ -1265,6 +1096,50 @@ export default function ApprovalComponent() {
               <X size={12} />
               Clear
             </button>
+
+            <div className="flex items-center gap-2">
+              <select
+                value={filterMonth}
+                onChange={(e) => setFilterMonth(e.target.value)}
+                className="border rounded px-2 py-1 text-xs"
+              >
+                <option value="">Month</option>
+                <option value="01">Jan</option>
+                <option value="02">Feb</option>
+                <option value="03">Mar</option>
+                <option value="04">Apr</option>
+                <option value="05">May</option>
+                <option value="06">Jun</option>
+                <option value="07">Jul</option>
+                <option value="08">Aug</option>
+                <option value="09">Sep</option>
+                <option value="10">Oct</option>
+                <option value="11">Nov</option>
+                <option value="12">Dec</option>
+              </select>
+              <select
+                value={filterYear}
+                onChange={(e) => setFilterYear(e.target.value)}
+                className="border rounded px-2 py-1 text-xs"
+              >
+                <option value="">Year</option>
+                {[...Array(currentYear - startYear + 1)].map((_, i) => {
+                  const year = startYear + i;
+                  return (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  );
+                })}
+              </select>
+              <button
+                className="px-3 py-1 rounded bg-blue-600 text-white text-xs"
+                onClick={fetchData}
+                // disabled={!filterMonth || !filterYear}
+              >
+                Filter
+              </button>
+            </div>
           </div>
 
           <div
