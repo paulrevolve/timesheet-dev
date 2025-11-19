@@ -346,6 +346,7 @@ export default function MainTable() {
   // const [notifySelectAll, setNotifySelectAll] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [userLoaded, setUserLoaded] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   // State for filters
   const [searchDate, setSearchDate] = useState("");
@@ -1186,6 +1187,66 @@ export default function MainTable() {
     setSelectedRows(updatedRows.filter((row) => row.selected));
   };
 
+  const handleDeleteClick = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (
+      deleteLoading ||
+      notifyLoading ||
+      importLoading ||
+      approveLoading ||
+      rejectLoading
+    )
+      return;
+
+    if (selectedRows.length === 0) {
+      showToast("Please select at least one timesheet to delete.", "warning");
+      return;
+    }
+
+    try {
+      setDeleteLoading(true);
+
+      // Array of selected timesheet IDs
+      const requestBody = selectedRows.map((row) => row.id);
+
+      const response = await fetch(
+        `${backendUrl}/api/Timesheet/BulkDeleteTimesheets?username=${encodeURIComponent(
+          currentUser.username
+        )}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody), // Just the array of IDs
+        }
+      );
+
+      if (response.ok) {
+        showToast(
+          `Deleted ${requestBody.length} timesheets successfully!`,
+          "success"
+        );
+        setRows((prevRows) =>
+          prevRows.filter((row) => !requestBody.includes(row.id))
+        );
+        setSelectedRows([]);
+        setSelectAll(false);
+      } else {
+        let errorMessage = "Failed to delete timesheets. Please try again.";
+        try {
+          const errorData = await response.text();
+          if (errorData) errorMessage = errorData;
+        } catch {}
+        showToast(errorMessage, "error");
+      }
+    } catch (error) {
+      showToast("Failed to delete timesheets. Please try again.", "error");
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   const buildBulkRequestBody = (selectedRows, action, reason, ipAddress) => {
     return selectedRows.map((row) => ({
       requestId: row.requestId || row.id,
@@ -1621,6 +1682,15 @@ export default function MainTable() {
                       onChange={handleImportFile}
                       accept=".csv"
                     />
+                    <button
+                      onClick={handleDeleteClick}
+                      disabled={deleteLoading || selectedRows.length === 0}
+                      className="bg-red-600 text-white px-4 py-1.5 rounded shadow-sm hover:bg-red-700 transition-colors text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {deleteLoading
+                        ? "Deleting..."
+                        : `Delete (${selectedRows.length})`}
+                    </button>
                   </>
                 )}
               </div>
