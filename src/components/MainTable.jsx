@@ -382,8 +382,8 @@ export default function MainTable() {
       setStatusFilters({
         OPEN: false,
         PENDING: false,
-        REJECTED: false,
-        APPROVED: false,
+        // REJECTED: false,
+        // APPROVED: false,
       });
     } else if (isUser) {
       setStatusFilters({
@@ -1482,26 +1482,12 @@ export default function MainTable() {
                 />
               </>
             )}
-            <button
-              onClick={handleClearAllFilters}
-              className="flex items-center gap-1 bg-gray-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-red-700 transition-colors shadow-sm disabled:opacity-50"
-              disabled={
-                loading ||
-                importLoading ||
-                notifyLoading ||
-                approveLoading ||
-                rejectLoading
-              }
-            >
-              <X size={12} />
-              Clear
-            </button>
 
             {/* Spacer to push remaining items to the right */}
             <div className="flex-grow"></div>
 
             {/* --- Status Filters --- */}
-            {/* <div className="flex gap-2 items-center border border-gray-200 rounded-lg px-3 py-1.5 bg-gray-50 shadow-sm">
+            <div className="flex gap-2 items-center border border-gray-200 rounded-lg px-3 py-1.5 bg-gray-50 shadow-sm">
               <span className="flex items-center text-xs font-semibold text-gray-700 mr-2">
                 <Filter size={12} className="mr-1.5" />
                 Status:
@@ -1529,9 +1515,23 @@ export default function MainTable() {
                   <span>{status}</span>
                 </label>
               ))}
-            </div> */}
+            </div>
 
             {/* --- Clear Button --- */}
+            <button
+              onClick={handleClearAllFilters}
+              className="flex items-center gap-1 bg-gray-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-red-700 transition-colors shadow-sm disabled:opacity-50"
+              disabled={
+                loading ||
+                importLoading ||
+                notifyLoading ||
+                approveLoading ||
+                rejectLoading
+              }
+            >
+              <X size={12} />
+              Clear
+            </button>
           </div>
           {/* --- End of Improved Filters Section --- */}
 
