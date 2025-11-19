@@ -8,7 +8,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import "./datepicker.css";
 import { backendUrl } from "./config";
 import { showToast } from "./Toast";
- 
 
 // const showToast = (message, type = "info") => {
 //   const bgColor =
@@ -152,6 +151,7 @@ const columnsExport = [
   "Seq No",
   "Approve Timestamp",
   "Imported Timestamp",
+  "Batch ID",
 ];
 
 export default function ExportTable() {
@@ -169,7 +169,7 @@ export default function ExportTable() {
   const [searchEmployeeName, setSearchEmployeeName] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-
+  const [batchIdFilter, setBatchIdFilter] = useState("");
   const colWidth = 120;
   const minTableWidth = columnsExport.length * colWidth;
 
@@ -360,6 +360,7 @@ export default function ExportTable() {
             Comment: item.comment || "",
             "Approve Timestamp": item.approvedDate || "",
             "Imported Timestamp": item.importedTimestamp,
+            "Batch ID": item.batchId,
           }))
         : [];
 
@@ -390,6 +391,13 @@ export default function ExportTable() {
         (row["Name"] || "")
           .toLowerCase()
           .includes(searchEmployeeName.trim().toLowerCase())
+      );
+    }
+    if (batchIdFilter.trim()) {
+      filtered = filtered.filter((row) =>
+        (row["Batch ID"] || "")
+          .toLowerCase()
+          .includes(batchIdFilter.trim().toLowerCase())
       );
     }
     return getSortedRows(filtered);
@@ -736,6 +744,7 @@ export default function ExportTable() {
     setSearchDate("");
     setSearchEmployeeId("");
     setSearchEmployeeName("");
+    setBatchIdFilter("");
   };
 
   if (!userLoaded || !currentUser) {
@@ -846,6 +855,13 @@ export default function ExportTable() {
                 value={searchEmployeeName}
                 onChange={(e) => setSearchEmployeeName(e.target.value)}
                 placeholder="Filter by Name"
+                className="border border-gray-300 rounded-md px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm w-36"
+              />
+              <input
+                type="text"
+                placeholder="Filter by Batch ID"
+                value={batchIdFilter}
+                onChange={(e) => setBatchIdFilter(e.target.value)}
                 className="border border-gray-300 rounded-md px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm w-36"
               />
             </div>

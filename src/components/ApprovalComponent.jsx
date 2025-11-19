@@ -224,6 +224,7 @@ const columnsAdmin = [
   "Approved Timestamp",
   "Imported By",
   "Imported Timestamp",
+  "Batch ID",
 ];
 
 const columnsViewer = [
@@ -245,6 +246,7 @@ const columnsViewer = [
   "Approved Timestamp",
   "Imported By",
   "Imported Timestamp",
+  "Batch ID",
 ];
 
 const ReasonModal = ({
@@ -343,6 +345,7 @@ export default function ApprovalComponent() {
   const [approveLoading, setApproveLoading] = useState(false);
   const [rejectLoading, setRejectLoading] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [batchIdFilter, setBatchIdFilter] = useState("");
 
   const [showReasonModal, setShowReasonModal] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
@@ -739,6 +742,7 @@ export default function ApprovalComponent() {
             "Pay Type": item.payType || "",
             Hours: formatHours(item.hours),
             "Seq No": item.sequenceNumber || "",
+            "Batch ID": item.batchId || "",
             Comment: item.comment || "",
             // "Approval Levels": formatApprovalLevels(item.approvalActions),
             approvalActions: item.approvalActions || [],
@@ -765,7 +769,8 @@ export default function ApprovalComponent() {
           (row["Employee ID"] || "").toLowerCase().includes(searchTerm) ||
           (row["Name"] || "").toLowerCase().includes(searchTerm) ||
           (row["Approver Name"] || "").toLowerCase().includes(searchTerm) ||
-          (row["Project ID"] || "").toLowerCase().includes(searchTerm)
+          (row["Project ID"] || "").toLowerCase().includes(searchTerm) ||
+          (row["Batch ID"] || "").toLowerCase().includes(searchTerm)
         );
       });
     }
@@ -789,6 +794,13 @@ export default function ApprovalComponent() {
         (row["Name"] || "")
           .toLowerCase()
           .includes(searchEmployeeName.trim().toLowerCase())
+      );
+    }
+    if (batchIdFilter.trim()) {
+      filtered = filtered.filter((row) =>
+        (row["Batch ID"] || "")
+          .toLowerCase()
+          .includes(batchIdFilter.trim().toLowerCase())
       );
     }
 
@@ -1083,6 +1095,7 @@ export default function ApprovalComponent() {
     setSearchDate("");
     setSearchEmployeeId("");
     setSearchEmployeeName("");
+    setBatchIdFilter("");
 
     setStatusFilters((prev) =>
       Object.keys(prev).reduce((acc, key) => {
@@ -1200,6 +1213,13 @@ export default function ApprovalComponent() {
                   value={searchEmployeeName}
                   onChange={(e) => setSearchEmployeeName(e.target.value)}
                   placeholder="Filter by Name"
+                  className="border border-gray-300 rounded-md px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm w-36"
+                />
+                <input
+                  type="text"
+                  placeholder="Filter by Batch ID"
+                  value={batchIdFilter}
+                  onChange={(e) => setBatchIdFilter(e.target.value)}
                   className="border border-gray-300 rounded-md px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm w-36"
                 />
               </>

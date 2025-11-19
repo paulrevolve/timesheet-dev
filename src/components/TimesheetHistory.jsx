@@ -52,6 +52,7 @@ const columnsAdmin = [
   "Approve Timestamp",
   "Imported By",
   "Imported Timestamp",
+  "Batch ID",
 ];
 
 const columnsViewer = [
@@ -76,6 +77,7 @@ const columnsViewer = [
   "Approve Timestamp",
   "Imported By",
   "Imported Timestamp",
+  "Batch ID",
 ];
 
 const ReasonModal = ({
@@ -184,6 +186,7 @@ export default function TimesheetHistory() {
   const [showReasonModal, setShowReasonModal] = useState(false);
   const [pendingAction, setPendingAction] = useState(null);
   const [userIpAddress, setUserIpAddress] = useState("");
+  const [batchIdFilter, setBatchIdFilter] = useState("");
 
   // New state for global search
   const [globalSearch, setGlobalSearch] = useState("");
@@ -578,7 +581,8 @@ export default function TimesheetHistory() {
             "Approver Name": item.approvedBy,
             "Approve Timestamp": item.approvedDate ? item.approvedDate : " ",
             "Imported By": item.createdBy || "",
-            "Imported Timestamp": item.importedTimestamp,
+            "Imported Timestamp": item.importedTimestamp || "",
+            "Batch ID": item.batchId || "",
             "Approved Date": item.approvedDate
               ? formatDate(item.approvedDate)
               : "NA",
@@ -609,7 +613,10 @@ export default function TimesheetHistory() {
           (row["Project ID"] || "").toLowerCase().includes(searchTerm) ||
           (row["PO Number"] || "").toLowerCase().includes(searchTerm) ||
           (row["RLSE Number"] || "").toLowerCase().includes(searchTerm) ||
-          (row["Timesheet Type Code"] || "").toLowerCase().includes(searchTerm)
+          (row["Timesheet Type Code"] || "")
+            .toLowerCase()
+            .includes(searchTerm) ||
+          (row["Batch ID"] || "").toLowerCase().includes(searchTerm)
         );
       });
     }
@@ -634,6 +641,13 @@ export default function TimesheetHistory() {
         (row["Name"] || "")
           .toLowerCase()
           .includes(searchEmployeeName.trim().toLowerCase())
+      );
+    }
+    if (batchIdFilter.trim()) {
+      filtered = filtered.filter((row) =>
+        (row["Batch ID"] || "")
+          .toLowerCase()
+          .includes(batchIdFilter.trim().toLowerCase())
       );
     }
 
@@ -713,6 +727,7 @@ export default function TimesheetHistory() {
     setSearchDate("");
     setSearchEmployeeId("");
     setSearchEmployeeName("");
+    setBatchIdFilter("");
 
     // Reset all statusFilters values to false
     setStatusFilters((prev) =>
@@ -762,7 +777,8 @@ export default function TimesheetHistory() {
             "Approver Name": item.approvedBy,
             "Approve Timestamp": item.approvedDate ? item.approvedDate : " ",
             "Imported By": item.createdBy || "",
-            "Imported Timestamp": item.importedTimestamp,
+            "Imported Timestamp": item.importedTimestamp || "",
+            "Batch ID": item.batchId || "",
             "Approved Date": item.approvedDate
               ? formatDate(item.approvedDate)
               : "NA",
@@ -882,8 +898,26 @@ export default function TimesheetHistory() {
                   placeholder="Filter by Name"
                   className="border border-gray-300 rounded-md px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm w-36"
                 />
+                <input
+                  type="text"
+                  placeholder="Filter by Batch ID"
+                  value={batchIdFilter}
+                  onChange={(e) => setBatchIdFilter(e.target.value)}
+                  className="border border-gray-300 rounded-md px-3 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 shadow-sm w-36"
+                />
               </>
             )}
+
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                onClick={handleClearAllFilters}
+                className="flex items-center gap-1 bg-gray-600 text-white px-3 py-1.5 rounded-md text-xs font-medium hover:bg-red-700 transition-colors shadow-sm disabled:opacity-50"
+                disabled={loading || actionLoading}
+              >
+                <X size={12} />
+                Clear
+              </button>
+            </div>
 
             {/* Spacer to push remaining items to the right */}
             <div className="flex-grow"></div>
