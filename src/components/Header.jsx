@@ -164,7 +164,7 @@ const Header = () => {
     setCurrentUser(null);
     setUserLoaded(false);
     showToast("Logged out successfully", "info");
-    navigate("/");
+    navigate("/login");
   };
   // rounded-t-lg
   return (

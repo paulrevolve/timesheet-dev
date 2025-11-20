@@ -936,8 +936,12 @@ export default function MainTable() {
       return;
     }
 
-    if (!selectedFile.name.toLowerCase().endsWith(".csv")) {
-      showToast("Please select a CSV file", "error");
+    // if (!selectedFile.name.toLowerCase().endsWith(".csv")) {
+    //   showToast("Please select a CSV file", "error");
+    //   return;
+    // }
+    if (!/\.(csv|xls|xlsx|xlsm|xlsb)$/i.test(selectedFile.name)) {
+      showToast("Please select a CSV, XLS, XLSX, XLSM, or XLSB file", "error");
       return;
     }
 
@@ -967,14 +971,14 @@ export default function MainTable() {
       });
 
       if (!uploadResponse.ok) {
-        throw new Error("Upload to S3 failed: " + uploadResponse.statusText);
+        throw new Error("Upload to S3 failed:" + uploadResponse.statusText);
       }
 
       // Step 3: Optionally refresh your data here
       setLoading(true);
       try {
         const refreshedResp = await fetch(
-          `${backendUrl}/api/Timesheet/import-csv-s3?filename=${encodeURIComponent(
+          `${backendUrl}/api/Timesheet/import-excel-s3?filename=${encodeURIComponent(
             selectedFile.name
           )}&Username=${encodeURIComponent(currentUser?.name || "")}`,
           {
@@ -1680,7 +1684,8 @@ export default function MainTable() {
                       type="file"
                       className="hidden"
                       onChange={handleImportFile}
-                      accept=".csv"
+                      // accept=".csv"
+                      accept=".csv,.xls,.xlsx,.xlsm,.xlsb"
                     />
                     <button
                       onClick={handleDeleteClick}
