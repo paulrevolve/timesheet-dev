@@ -980,7 +980,7 @@ export default function MainTable() {
         const refreshedResp = await fetch(
           `${backendUrl}/api/Timesheet/import-excel-s3?filename=${encodeURIComponent(
             selectedFile.name
-          )}&Username=${encodeURIComponent(currentUser?.name || "")}`,
+          )}&Username=${encodeURIComponent(currentUser?.username || "")}`,
           {
             method: "POST",
           }
