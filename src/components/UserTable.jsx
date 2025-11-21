@@ -860,6 +860,7 @@ export default function UserTable() {
         role: user.role,
         isActive: true, // Set to true for activation
         workflowId: user.workFlowId,
+        firstLogin: true,
       };
 
       const response = await fetch(`${backendUrl}/api/User/${user.userId}`, {
@@ -901,6 +902,7 @@ export default function UserTable() {
         role: user.role,
         isActive: false, // Set to false for deactivation
         workflowId: user.workFlowId,
+        firstLogin: false,
       };
 
       const response = await fetch(`${backendUrl}/api/User/${user.userId}`, {
